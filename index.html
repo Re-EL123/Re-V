@@ -1,247 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resume Builder</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
-            background-color: #f1f1f1;
-            color: #333;
-            margin: 0;
-            padding: 0;
-        }
-
-        .app-container {
-            width: 90%;
-            max-width: 600px;
-            margin: 50px auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 2rem;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-size: 1rem;
-            margin-bottom: 5px;
-        }
-
-        input, textarea, select {
-            width: 100%;
-            padding: 10px;
-            font-size: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        button {
-            background-color: #007AFF;
-            color: white;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            font-size: 1.1rem;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #005BB5;
-        }
-
-        #resumePreview {
-            margin-top: 20px;
-            padding: 10px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-        }
-
-        .theme1 {
-            font-family: 'Arial', sans-serif;
-            color: #4A90E2;
-        }
-
-        .theme2 {
-            font-family: 'Georgia', serif;
-            color: #5B5B5B;
-        }
-
-        .theme3 {
-            font-family: 'Tahoma', sans-serif;
-            color: #D65B5B;
-        }
-
-        .theme4 {
-            font-family: 'Courier New', monospace;
-            color: #50C878;
-        }
-
-        .theme5 {
-            font-family: 'Verdana', sans-serif;
-            color: #8A2BE2;
-        }
-
-        .theme6 {
-            font-family: 'Times New Roman', serif;
-            color: #CD5C5C;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Re-V CV Maker Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      text-transform: capitalize;
+    }
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(145deg, #f0f0f0, #ffffff);
+      animation: fadeIn 1s ease-in;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      animation: slideUp 0.6s ease-out;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    h1 {
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      margin-bottom: 1em;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      display: block;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .theme-option {
+      margin-top: 10px;
+    }
+    .resume-preview {
+      margin-top: 30px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #fafafa;
+    }
+    .theme1 { color: #1a1a1a; font-family: 'Georgia'; }
+    .theme2 { color: #2c3e50; font-family: 'Verdana'; }
+    .theme3 { color: #8e44ad; font-family: 'Courier New'; }
+    .theme4 { color: #d35400; font-family: 'Times New Roman'; }
+    .theme5 { color: #16a085; font-family: 'Arial'; }
+    .theme6 { color: #34495e; font-family: 'Tahoma'; }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Re-V CV Maker Tool</h1>
 
-<div class="app-container">
-    <h1>Create Your Professional Resume</h1>
-    
-    <form id="resumeForm">
-        <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" required>
-        </div>
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" required>
-        </div>
-        <div class="form-group">
-            <label for="phone">Phone</label>
-            <input type="text" id="phone" required>
-        </div>
-        <div class="form-group">
-            <label for="aboutMe">About Me</label>
-            <select id="aboutMe">
-                <!-- Randomly chosen about me descriptions -->
-                <option value="Driven professional with a passion for excellence.">Driven professional with a passion for excellence.</option>
-                <option value="Focused on delivering results while maintaining a high level of professionalism.">Focused on delivering results while maintaining a high level of professionalism.</option>
-                <option value="Innovative thinker with a love for problem solving and creativity.">Innovative thinker with a love for problem solving and creativity.</option>
-                <option value="Detail-oriented individual with a commitment to excellence in all aspects of work.">Detail-oriented individual with a commitment to excellence in all aspects of work.</option>
-                <option value="A collaborative team player who strives for both personal and team success.">A collaborative team player who strives for both personal and team success.</option>
-                <!-- More descriptions... -->
-            </select>
-        </div>
-        <div class="form-group">
-            <label for="education">Education</label>
-            <textarea id="education" placeholder="Institution Name, Qualification, Year Completed" required></textarea>
-        </div>
-        <div class="form-group">
-            <label for="experience">Experience</label>
-            <textarea id="experience" placeholder="Company Name, Position, Duties" required></textarea>
-        </div>
-        <div class="form-group">
-            <label for="skills">Skills</label>
-            <textarea id="skills" placeholder="Skills (comma separated)" required></textarea>
-        </div>
-        
-        <div class="form-group">
-            <label for="theme">Choose Theme</label>
-            <select id="theme" required>
-                <option value="theme1">Elegant Blue</option>
-                <option value="theme2">Classy Gray</option>
-                <option value="theme3">Bold Red</option>
-                <option value="theme4">Fresh Green</option>
-                <option value="theme5">Vibrant Purple</option>
-                <option value="theme6">Warm Coral</option>
-            </select>
-        </div>
-        
-        <button type="submit">Generate Resume</button>
-    </form>
-    
-    <div id="resumePreview">
-        <!-- Preview of the resume -->
-    </div>
-    
-    <button id="downloadBtn" style="display: none;">Download as PDF</button>
-</div>
+    <!-- Form inputs will go here -->
+    <!-- Theme selection -->
+    <!-- About me dropdown -->
+    <!-- Dynamic experience/education/skills fields -->
+    <!-- Resume preview section -->
+    <!-- Export to PDF button -->
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script>
-    const { jsPDF } = window.jspdf;
+    <!-- JavaScript and dynamic functionality will follow -->
+  </div>
 
-    document.getElementById("resumeForm").addEventListener("submit", function (e) {
-        e.preventDefault();
-
-        const name = document.getElementById("name").value;
-        const email = document.getElementById("email").value;
-        const phone = document.getElementById("phone").value;
-        const aboutMe = document.getElementById("aboutMe").value;
-        const education = document.getElementById("education").value;
-        const experience = document.getElementById("experience").value;
-        const skills = document.getElementById("skills").value;
-        const theme = document.getElementById("theme").value;
-
-        generateResume(name, email, phone, aboutMe, education, experience, skills, theme);
-    });
-
-    function generateResume(name, email, phone, aboutMe, education, experience, skills, theme) {
-        const previewDiv = document.getElementById("resumePreview");
-        
-        // Generate the resume content
-        let resumeContent = `
-            <div class="${theme}">
-                <h2 style="text-align: center;">Curriculum Vitae</h2>
-                <h3 style="text-align: center;">${name}</h3>
-                <p style="text-align: center;">${email} | ${phone}</p>
-                <h4>About Me</h4>
-                <p>${aboutMe}</p>
-                <h4>Education</h4>
-                <p>${education}</p>
-                <h4>Experience</h4>
-                <p>${experience}</p>
-                <h4>Skills</h4>
-                <p>${skills}</p>
-            </div>
-        `;
-        
-        previewDiv.innerHTML = resumeContent;
-        
-        document.getElementById("downloadBtn").style.display = "inline-block";
-    }
-
-    document.getElementById("downloadBtn").addEventListener("click", function () {
-        const name = document.getElementById("name").value;
-        const email = document.getElementById("email").value;
-        const phone = document.getElementById("phone").value;
-        const aboutMe = document.getElementById("aboutMe").value;
-        const education = document.getElementById("education").value;
-        const experience = document.getElementById("experience").value;
-        const skills = document.getElementById("skills").value;
-        const theme = document.getElementById("theme").value;
-
-        const doc = new jsPDF();
-
-        doc.setFont("helvetica", "normal");
-        doc.text("Curriculum Vitae", 105, 20, null, null, 'center');
-        doc.text(`Name: ${name}`, 20, 30);
-        doc.text(`Email: ${email}`, 20, 40);
-        doc.text(`Phone: ${phone}`, 20, 50);
-        doc.text(`About Me: ${aboutMe}`, 20, 60);
-        doc.text(`Education: ${education}`, 20, 70);
-        doc.text(`Experience: ${experience}`, 20, 80);
-        doc.text(`Skills: ${skills}`, 20, 90);
-        doc.text("Created on www.re-el-branding.rf.gd", 105, 280, null, null, 'center');
-        
-        // Watermark and scaling
-        doc.setFontSize(10);
-        doc.text("Created on www.re-el-branding.rf.gd", 105, 280, null, null, 'center');
-        
-        doc.save(`${name}-resume.pdf`);
-    });
-</script>
-
+  <script>
+    // JS will be added next step: dynamic field generation, random about me, PDF export with watermark, theme switching, animations
+  </script>
 </body>
 </html>
+
 
