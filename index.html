@@ -15,19 +15,18 @@
 
         .app-container {
             width: 90%;
-            max-width: 800px;
+            max-width: 600px;
             margin: 50px auto;
             background-color: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
 
         h1 {
             text-align: center;
-            font-size: 2.5rem;
+            font-size: 2rem;
             margin-bottom: 20px;
-            text-transform: capitalize;
         }
 
         .form-group {
@@ -64,34 +63,49 @@
             background-color: #005BB5;
         }
 
-        .theme-selector, .about-me-container {
-            margin-bottom: 20px;
-        }
-
-        .resume-preview {
-            margin-top: 30px;
-            padding: 15px;
+        #resumePreview {
+            margin-top: 20px;
+            padding: 10px;
             background-color: #f9f9f9;
             border: 1px solid #ddd;
             border-radius: 5px;
         }
 
-        .watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 30px;
-            color: rgba(0, 0, 0, 0.1);
-            z-index: -1;
-            font-weight: bold;
+        .theme1 {
+            font-family: 'Arial', sans-serif;
+            color: #4A90E2;
+        }
+
+        .theme2 {
+            font-family: 'Georgia', serif;
+            color: #5B5B5B;
+        }
+
+        .theme3 {
+            font-family: 'Tahoma', sans-serif;
+            color: #D65B5B;
+        }
+
+        .theme4 {
+            font-family: 'Courier New', monospace;
+            color: #50C878;
+        }
+
+        .theme5 {
+            font-family: 'Verdana', sans-serif;
+            color: #8A2BE2;
+        }
+
+        .theme6 {
+            font-family: 'Times New Roman', serif;
+            color: #CD5C5C;
         }
     </style>
 </head>
 <body>
 
 <div class="app-container">
-    <h1>Curriculum Vitae</h1>
+    <h1>Create Your Professional Resume</h1>
     
     <form id="resumeForm">
         <div class="form-group">
@@ -106,180 +120,128 @@
             <label for="phone">Phone</label>
             <input type="text" id="phone" required>
         </div>
-
-        <div class="form-group about-me-container">
-            <label for="about-me">About Me</label>
-            <textarea id="about-me"></textarea>
-        </div>
-
         <div class="form-group">
-            <label for="education">Education</label>
-            <div id="education">
-                <div class="education-entry">
-                    <input type="text" placeholder="Institution Name" class="education-field" />
-                    <input type="text" placeholder="Qualification" class="education-field" />
-                    <input type="text" placeholder="Year Completed" class="education-field" />
-                </div>
-            </div>
-            <button type="button" onclick="addEducation()">Add More Education</button>
-        </div>
-
-        <div class="form-group">
-            <label for="experience">Experience</label>
-            <div id="experience">
-                <div class="experience-entry">
-                    <input type="text" placeholder="Company Name" class="experience-field" />
-                    <input type="text" placeholder="Position" class="experience-field" />
-                    <textarea placeholder="Duties" class="experience-field"></textarea>
-                </div>
-            </div>
-            <button type="button" onclick="addExperience()">Add More Experience</button>
-        </div>
-
-        <div class="form-group">
-            <label for="skills">Skills</label>
-            <textarea id="skills"></textarea>
-        </div>
-
-        <div class="form-group theme-selector">
-            <label for="theme">Choose Resume Theme</label>
-            <select id="theme" required>
-                <option value="light">Light Theme</option>
-                <option value="dark">Dark Theme</option>
-                <option value="modern">Modern Theme</option>
-                <option value="classic">Classic Theme</option>
-                <option value="minimalist">Minimalist Theme</option>
-                <option value="elegant">Elegant Theme</option>
+            <label for="aboutMe">About Me</label>
+            <select id="aboutMe">
+                <!-- Randomly chosen about me descriptions -->
+                <option value="Driven professional with a passion for excellence.">Driven professional with a passion for excellence.</option>
+                <option value="Focused on delivering results while maintaining a high level of professionalism.">Focused on delivering results while maintaining a high level of professionalism.</option>
+                <option value="Innovative thinker with a love for problem solving and creativity.">Innovative thinker with a love for problem solving and creativity.</option>
+                <option value="Detail-oriented individual with a commitment to excellence in all aspects of work.">Detail-oriented individual with a commitment to excellence in all aspects of work.</option>
+                <option value="A collaborative team player who strives for both personal and team success.">A collaborative team player who strives for both personal and team success.</option>
+                <!-- More descriptions... -->
             </select>
         </div>
-
+        <div class="form-group">
+            <label for="education">Education</label>
+            <textarea id="education" placeholder="Institution Name, Qualification, Year Completed" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="experience">Experience</label>
+            <textarea id="experience" placeholder="Company Name, Position, Duties" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="skills">Skills</label>
+            <textarea id="skills" placeholder="Skills (comma separated)" required></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label for="theme">Choose Theme</label>
+            <select id="theme" required>
+                <option value="theme1">Elegant Blue</option>
+                <option value="theme2">Classy Gray</option>
+                <option value="theme3">Bold Red</option>
+                <option value="theme4">Fresh Green</option>
+                <option value="theme5">Vibrant Purple</option>
+                <option value="theme6">Warm Coral</option>
+            </select>
+        </div>
+        
         <button type="submit">Generate Resume</button>
     </form>
     
-    <div id="resumePreview" class="resume-preview">
-        <div class="watermark">Created on www.re-el-branding.rf.gd</div>
+    <div id="resumePreview">
         <!-- Preview of the resume -->
     </div>
     
     <button id="downloadBtn" style="display: none;">Download as PDF</button>
-    <button id="downloadPngBtn" style="display: none;">Download as PNG</button>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script>
     const { jsPDF } = window.jspdf;
-    const aboutMeList = [
-        "I am a passionate and driven individual with a strong desire to make an impact.",
-        "Creative thinker with a focus on innovation and bringing ideas to life.",
-        "A dedicated professional who strives for excellence in everything I do.",
-        "Energetic and detail-oriented, always looking to improve and grow.",
-        "A collaborative team player with excellent communication skills.",
-        "An enthusiastic and reliable individual who values hard work and dedication.",
-        "Driven by curiosity and a passion for learning new skills.",
-        "Focused on delivering results while maintaining high standards of quality.",
-        "Passionate about continuous improvement and finding smarter solutions.",
-        "A strategic thinker with a keen eye for identifying opportunities.",
-        "An adaptable and flexible professional ready to take on new challenges.",
-        "Dedicated to creating value through creativity and resourcefulness.",
-        "Highly motivated to achieve personal and professional growth.",
-        "Committed to fostering positive relationships and building strong networks.",
-        "A proactive and solutions-oriented individual with excellent problem-solving skills.",
-        "Innovative mindset with a keen ability to turn ideas into reality.",
-        "An ambitious individual striving for excellence in all areas of life.",
-        "Focused on achieving personal goals while contributing to team success.",
-        "A reliable individual committed to achieving and exceeding goals.",
-        "A results-driven individual with a passion for making a difference."
-    ];
 
     document.getElementById("resumeForm").addEventListener("submit", function (e) {
         e.preventDefault();
-        generateResume();
-    });
 
-    function generateResume() {
-        const name = capitalizeWords(document.getElementById("name").value);
-        const email = capitalizeWords(document.getElementById("email").value);
-        const phone = capitalizeWords(document.getElementById("phone").value);
-        const aboutMe = aboutMeList[Math.floor(Math.random() * aboutMeList.length)];
-        const education = getEducation();
-        const experience = getExperience();
-        const skills = capitalizeWords(document.getElementById("skills").value);
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const phone = document.getElementById("phone").value;
+        const aboutMe = document.getElementById("aboutMe").value;
+        const education = document.getElementById("education").value;
+        const experience = document.getElementById("experience").value;
+        const skills = document.getElementById("skills").value;
         const theme = document.getElementById("theme").value;
 
-        let previewDiv = document.getElementById("resumePreview");
+        generateResume(name, email, phone, aboutMe, education, experience, skills, theme);
+    });
 
+    function generateResume(name, email, phone, aboutMe, education, experience, skills, theme) {
+        const previewDiv = document.getElementById("resumePreview");
+        
+        // Generate the resume content
         let resumeContent = `
-            <h2 style="text-align: center;">Curriculum Vitae</h2>
-            <p><strong>${name}</strong></p>
-            <p>Email: ${email} | Phone: ${phone}</p>
-            <h3>About Me</h3>
-            <p>${aboutMe}</p>
-            <h3>Education</h3>
-            ${education}
-            <h3>Experience</h3>
-            ${experience}
-            <h3>Skills</h3>
-            <p>${skills}</p>
+            <div class="${theme}">
+                <h2 style="text-align: center;">Curriculum Vitae</h2>
+                <h3 style="text-align: center;">${name}</h3>
+                <p style="text-align: center;">${email} | ${phone}</p>
+                <h4>About Me</h4>
+                <p>${aboutMe}</p>
+                <h4>Education</h4>
+                <p>${education}</p>
+                <h4>Experience</h4>
+                <p>${experience}</p>
+                <h4>Skills</h4>
+                <p>${skills}</p>
+            </div>
         `;
-
+        
         previewDiv.innerHTML = resumeContent;
+        
         document.getElementById("downloadBtn").style.display = "inline-block";
-        document.getElementById("downloadPngBtn").style.display = "inline-block";
     }
 
-    function capitalizeWords(text) {
-        return text.replace(/\b\w/g, char => char.toUpperCase());
-    }
+    document.getElementById("downloadBtn").addEventListener("click", function () {
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const phone = document.getElementById("phone").value;
+        const aboutMe = document.getElementById("aboutMe").value;
+        const education = document.getElementById("education").value;
+        const experience = document.getElementById("experience").value;
+        const skills = document.getElementById("skills").value;
+        const theme = document.getElementById("theme").value;
 
-    function getEducation() {
-        let educationHTML = "";
-        const educationFields = document.querySelectorAll(".education-field");
-        for (let i = 0; i < educationFields.length; i += 3) {
-            educationHTML += `
-                <p><strong>${educationFields[i].value}</strong></p>
-                <p>Qualification: ${educationFields[i + 1].value}</p>
-                <p>Year Completed: ${educationFields[i + 2].value}</p>
-            `;
-        }
-        return educationHTML;
-    }
+        const doc = new jsPDF();
 
-    function getExperience() {
-        let experienceHTML = "";
-        const experienceFields = document.querySelectorAll(".experience-field");
-        for (let i = 0; i < experienceFields.length; i += 3) {
-            experienceHTML += `
-                <p><strong>${experienceFields[i].value}</strong></p>
-                <p>Position: ${experienceFields[i + 1].value}</p>
-                <p>Duties: ${experienceFields[i + 2].value}</p>
-            `;
-        }
-        return experienceHTML;
-    }
-
-    function addEducation() {
-        const educationDiv = document.getElementById("education");
-        educationDiv.innerHTML += `
-            <div class="education-entry">
-                <input type="text" placeholder="Institution Name" class="education-field" />
-                <input type="text" placeholder="Qualification" class="education-field" />
-                <input type="text" placeholder="Year Completed" class="education-field" />
-            </div>
-        `;
-    }
-
-    function addExperience() {
-        const experienceDiv = document.getElementById("experience");
-        experienceDiv.innerHTML += `
-            <div class="experience-entry">
-                <input type="text" placeholder="Company Name" class="experience-field" />
-                <input type="text" placeholder="Position" class="experience-field" />
-                <textarea placeholder="Duties" class="experience-field"></textarea>
-            </div>
-        `;
-    }
+        doc.setFont("helvetica", "normal");
+        doc.text("Curriculum Vitae", 105, 20, null, null, 'center');
+        doc.text(`Name: ${name}`, 20, 30);
+        doc.text(`Email: ${email}`, 20, 40);
+        doc.text(`Phone: ${phone}`, 20, 50);
+        doc.text(`About Me: ${aboutMe}`, 20, 60);
+        doc.text(`Education: ${education}`, 20, 70);
+        doc.text(`Experience: ${experience}`, 20, 80);
+        doc.text(`Skills: ${skills}`, 20, 90);
+        doc.text("Created on www.re-el-branding.rf.gd", 105, 280, null, null, 'center');
+        
+        // Watermark and scaling
+        doc.setFontSize(10);
+        doc.text("Created on www.re-el-branding.rf.gd", 105, 280, null, null, 'center');
+        
+        doc.save(`${name}-resume.pdf`);
+    });
 </script>
 
 </body>
 </html>
+
