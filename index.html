@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Re-V CV Maker Tool</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -85,19 +86,156 @@
 <body>
   <div class="container">
     <h1>Re-V CV Maker Tool</h1>
+    <label>Full Name</label>
+    <input type="text" id="name">
 
-    <!-- Form inputs will go here -->
-    <!-- Theme selection -->
-    <!-- About me dropdown -->
-    <!-- Dynamic experience/education/skills fields -->
-    <!-- Resume preview section -->
-    <!-- Export to PDF button -->
+    <label>Contact Info</label>
+    <input type="text" id="contact">
 
-    <!-- JavaScript and dynamic functionality will follow -->
+    <label>About Me</label>
+    <select id="about">
+      <option>Dedicated And Results-Driven Professional With A Passion For Innovation.</option>
+      <option>Creative Thinker Who Thrives In Fast-Paced Environments.</option>
+      <option>Hardworking And Reliable With Excellent Time Management Skills.</option>
+      <option>Adaptable Team Player With Strong Communication Abilities.</option>
+      <option>Goal-Oriented Individual Committed To Continuous Learning.</option>
+      <option>Proactive Problem Solver Focused On Delivering Solutions.</option>
+      <option>Efficient Multitasker Capable Of Handling Multiple Priorities.</option>
+      <option>Self-Motivated Professional With A Strong Work Ethic.</option>
+      <option>Analytical Mindset With A Keen Eye For Detail.</option>
+      <option>Strong Interpersonal Skills With A Customer-Centric Approach.</option>
+      <option>Versatile Individual With Experience Across Multiple Industries.</option>
+      <option>Natural Leader Who Excels At Motivating Others.</option>
+      <option>Effective Communicator With Experience In Public Speaking.</option>
+      <option>Strategic Thinker With A Long-Term Vision For Success.</option>
+      <option>Energetic And Approachable With A Positive Attitude.</option>
+      <option>Innovative Problem-Solver With A Passion For Technology.</option>
+      <option>Calm Under Pressure And Confident In Making Decisions.</option>
+      <option>Detail-Oriented Professional With Strong Organizational Skills.</option>
+      <option>Collaborative Team Member With A Focus On Shared Goals.</option>
+      <option>Reliable Individual Who Can Be Trusted To Deliver Quality Work.</option>
+    </select>
+
+    <div id="education-section">
+      <label>Education</label>
+    </div>
+    <button onclick="addEducation()">Add Education</button>
+
+    <div id="experience-section">
+      <label>Experience</label>
+    </div>
+    <button onclick="addExperience()">Add Experience</button>
+
+    <div id="skills-section">
+      <label>Skills</label>
+    </div>
+    <button onclick="addSkill()">Add Skill</button>
+
+    <label>Select Theme</label>
+    <select id="theme">
+      <option value="theme1">Classic Noir</option>
+      <option value="theme2">Modern Blue</option>
+      <option value="theme3">Royal Purple</option>
+      <option value="theme4">Vintage Copper</option>
+      <option value="theme5">Teal Essence</option>
+      <option value="theme6">Steel Gray</option>
+    </select>
+
+    <button onclick="generateCV()">Generate CV</button>
+    <div id="cv-preview" class="resume-preview"></div>
+    <button onclick="exportPDF()">Export As PDF</button>
   </div>
 
   <script>
-    // JS will be added next step: dynamic field generation, random about me, PDF export with watermark, theme switching, animations
+    let eduCount = 0, expCount = 0, skillCount = 0;
+
+    function addEducation() {
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <input placeholder="Institution Name" id="edu-inst-${eduCount}">
+        <input placeholder="Qualification" id="edu-qual-${eduCount}">
+        <input placeholder="Year Completed" id="edu-year-${eduCount}">
+      `;
+      document.getElementById('education-section').appendChild(div);
+      eduCount++;
+    }
+
+    function addExperience() {
+      const div = document.createElement('div');
+      div.innerHTML = `
+        <input placeholder="Company Name" id="exp-comp-${expCount}">
+        <input placeholder="Position" id="exp-pos-${expCount}">
+        <textarea placeholder="Duties" id="exp-duties-${expCount}"></textarea>
+      `;
+      document.getElementById('experience-section').appendChild(div);
+      expCount++;
+    }
+
+    function addSkill() {
+      const input = document.createElement('input');
+      input.placeholder = "Skill";
+      input.id = `skill-${skillCount}`;
+      document.getElementById('skills-section').appendChild(input);
+      skillCount++;
+    }
+
+    function generateCV() {
+      const name = document.getElementById('name').value;
+      const contact = document.getElementById('contact').value;
+      const about = document.getElementById('about').value;
+      const theme = document.getElementById('theme').value;
+
+      let educationHTML = '', experienceHTML = '', skillsHTML = '';
+
+      for (let i = 0; i < eduCount; i++) {
+        const inst = document.getElementById(`edu-inst-${i}`).value;
+        const qual = document.getElementById(`edu-qual-${i}`).value;
+        const year = document.getElementById(`edu-year-${i}`).value;
+        educationHTML += `<p><strong>${inst}</strong> - ${qual} (${year})</p>`;
+      }
+
+      for (let i = 0; i < expCount; i++) {
+        const comp = document.getElementById(`exp-comp-${i}`).value;
+        const pos = document.getElementById(`exp-pos-${i}`).value;
+        const duties = document.getElementById(`exp-duties-${i}`).value;
+        experienceHTML += `<p><strong>${comp}</strong><br>${pos}<br>${duties}</p>`;
+      }
+
+      for (let i = 0; i < skillCount; i++) {
+        const skill = document.getElementById(`skill-${i}`).value;
+        skillsHTML += `<li>${skill}</li>`;
+      }
+
+      document.getElementById('cv-preview').innerHTML = `
+        <div class="${theme}">
+          <h2 style="text-align:center">Curriculum Vitae</h2>
+          <h3>${name}</h3>
+          <p>${contact}</p>
+          <h4>About Me</h4><p>${about}</p>
+          <h4>Education</h4>${educationHTML}
+          <h4>Experience</h4>${experienceHTML}
+          <h4>Skills</h4><ul>${skillsHTML}</ul>
+          <footer><small>Created on www.re-el-branding.rf.gd</small></footer>
+        </div>
+      `;
+    }
+
+    async function exportPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const element = document.getElementById('cv-preview');
+      await doc.html(element, {
+        callback: function (doc) {
+          doc.save("CV_Re-V.pdf");
+        },
+        margin: [10, 10, 10, 10],
+        autoPaging: 'text',
+        x: 10,
+        y: 10,
+        width: 180,
+        windowWidth: 800
+      });
+    }
   </script>
 </body>
 </html>
