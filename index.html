@@ -1,281 +1,228 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Re-V CV Maker Tool</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Roboto&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body {
       font-family: 'Roboto', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: rgba(255, 255, 255, 0.6);
+      background: url('https://www.transparenttextures.com/patterns/white-wall-3.png');
       backdrop-filter: blur(8px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      transition: all 0.3s ease;
+      margin: 0;
+      padding: 20px;
     }
-
-    h1 {
-      font-family: 'Playfair Display', serif;
-      text-align: center;
-      margin-top: 1rem;
-    }
-
     .container {
-      background: white;
-      padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      width: 90%;
       max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
     }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-
-    input, textarea, select {
-      width: 100%;
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      margin-top: 5px;
-      font-size: 1rem;
-    }
-
-    .btn {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background: #4a90e2;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    .btn:hover {
-      background: #357ABD;
-    }
-
-    .cv-preview {
-      margin-top: 30px;
-      background: white;
-      padding: 20px;
-      width: 100%;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      position: relative;
-    }
-
-    .cv-content h2 {
+    h1 {
       text-align: center;
-      font-size: 1.8em;
-      text-transform: capitalize;
+      font-size: 24px;
+      margin-bottom: 30px;
     }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
     }
-
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: #007aff;
+      color: white;
+      cursor: pointer;
+      margin: 10px 5px;
+    }
+    .cv-preview {
+      border: 1px solid #ccc;
+      padding: 20px;
+      margin-top: 20px;
+      background-color: #f8f9fa;
+    }
     .hidden {
       display: none;
     }
-
-    .remove-btn {
-      background: #e74c3c;
-      margin-left: 10px;
-    }
-
-    .remove-btn:hover {
-      background: #c0392b;
-    }
   </style>
 </head>
+
 <body>
-  <h1>Re-V CV Maker Tool</h1>
   <div class="container">
-    <form id="cvForm">
-      <label>Full Name</label>
-      <input type="text" id="fullName" required />
+    <h1>Curriculum Vitae</h1>
+    <label>Full Name:</label>
+    <input type="text" id="fullName">
+    <label>Phone Number:</label>
+    <input type="text" id="phoneNumber">
+    <label>Email Address:</label>
+    <input type="email" id="emailAddress">
+    <label>Home Address:</label>
+    <input type="text" id="homeAddress">
 
-      <label>About Me</label>
-      <select id="aboutMe"></select>
+    <label>About Me:</label>
+    <textarea id="aboutMe"></textarea>
 
-      <div id="educationSection">
-        <label>Education</label>
-      </div>
-      <button type="button" class="btn" onclick="addEducation()">Add Education</button>
-
-      <div id="experienceSection">
-        <label>Experience</label>
-      </div>
-      <button type="button" class="btn" onclick="addExperience()">Add Experience</button>
-
-      <div id="skillsSection">
-        <label>Skills</label>
-      </div>
-      <button type="button" class="btn" onclick="addSkill()">Add Skill</button>
-
-      <button type="submit" class="btn">Generate CV</button>
-    </form>
-  </div>
-
-  <div id="cvPreview" class="cv-preview hidden">
-    <div class="cv-content" id="cvContent"></div>
-    <div class="actions">
-      <button class="btn" id="downloadBtn">Download PDF</button>
-      <button class="btn" id="shareBtn">Share</button>
+    <div id="educationSection">
+      <h3>Education</h3>
     </div>
+    <button onclick="addEducation()">Add Education</button>
+
+    <div id="experienceSection">
+      <h3>Experience</h3>
+    </div>
+    <button onclick="addExperience()">Add Experience</button>
+
+    <div id="skillsSection">
+      <h3>Skills</h3>
+    </div>
+    <button onclick="addSkill()">Add Skill</button>
+
+    <button onclick="generateCV()">Generate CV</button>
+
+    <div class="cv-preview hidden" id="cvPreview"></div>
+    <button class="hidden" id="downloadBtn" onclick="downloadPDF()">Download PDF</button>
+    <button class="hidden" id="shareBtn" onclick="shareCV()">Share CV</button>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
   <script>
     const aboutMeOptions = [
-      "Passionate And Results-Driven Professional Committed To Continuous Growth.",
-      "Creative Thinker With A Strong Eye For Detail And Problem-Solving Skills.",
-      "Enthusiastic Team Player Who Thrives In Collaborative Environments.",
-      "Adaptable Individual With A Positive Attitude Toward Change.",
-      "Self-Motivated Professional With A Desire To Achieve Excellence.",
-      "Innovative Mindset With A Drive To Turn Ideas Into Action.",
-      "Organized And Methodical With Great Time Management Skills.",
-      "Analytical Thinker With A Strong Background In Data Interpretation.",
-      "Experienced Leader With A Track Record Of Successful Projects.",
-      "Motivated Graduate Eager To Apply Knowledge In Practical Settings.",
-      "Reliable And Trustworthy With High Professional Standards.",
-      "Tech-Savvy Problem Solver With A Passion For Learning.",
-      "Exceptional Communicator With The Ability To Inspire Others.",
-      "Customer-Focused Professional Dedicated To Satisfaction.",
-      "Driven Individual Who Excels Under Pressure.",
-      "Detail-Oriented With A Flair For Creative Presentation.",
-      "Strategic Planner With The Ability To Forecast Outcomes.",
-      "Collaborative Worker With Strong Interpersonal Skills.",
-      "Quick Learner With A Growth-Oriented Mindset.",
-      "Ambitious Visionary With A Love For Innovation."
+      "Highly Motivated Professional With A Passion For Continuous Learning.",
+      "Creative Thinker With A Strategic Mindset And A Keen Eye For Detail.",
+      "Adaptable And Efficient Individual With Proven Problem-Solving Skills.",
+      "Energetic Team Player Committed To Excellence And Innovation.",
+      "Detail-Oriented Professional With Strong Communication Abilities.",
+      "Enthusiastic Leader Who Thrives In Collaborative Environments.",
+      "Result-Driven Achiever Focused On Impactful Outcomes.",
+      "Quick Learner With A Deep Curiosity For New Technologies.",
+      "Dependable Worker Who Prioritizes Quality And Accuracy.",
+      "Resilient And Positive Individual With A Growth Mindset.",
+      "Professional With Strong Ethics And A Drive To Succeed.",
+      "Visionary Individual Who Embraces Innovation And Change.",
+      "Skilled Problem-Solver With A Focus On User-Centered Solutions.",
+      "Resourceful Professional With A Talent For Organization.",
+      "Insightful Thinker With A Flair For Creative Solutions.",
+      "Dedicated To Delivering Results And Exceeding Expectations.",
+      "Strong Interpersonal Skills With A Passion For Helping Others.",
+      "Well-Rounded Professional With Multidisciplinary Experience.",
+      "Positive Attitude With A Commitment To Lifelong Learning.",
+      "Goal-Oriented Professional Who Thrives On Challenges."
     ];
 
-    const aboutMeSelect = document.getElementById('aboutMe');
-    aboutMeOptions.forEach(desc => {
-      const option = document.createElement('option');
-      option.value = desc;
-      option.textContent = desc;
-      aboutMeSelect.appendChild(option);
-    });
-
-    let eduCount = 0;
-    let expCount = 0;
-    let skillCount = 0;
+    function createInputSet(type) {
+      const container = document.createElement('div');
+      container.innerHTML =
+        type === 'education' ? `
+        <input placeholder="Institution Name">
+        <input placeholder="Qualification">
+        <input placeholder="Year Completed">
+        <button onclick="this.parentElement.remove()">Remove</button>
+        ` : type === 'experience' ? `
+        <input placeholder="Company Name">
+        <input placeholder="Position">
+        <textarea placeholder="Duties"></textarea>
+        <button onclick="this.parentElement.remove()">Remove</button>
+        ` : `
+        <input placeholder="Skill">
+        <button onclick="this.parentElement.remove()">Remove</button>
+        `;
+      return container;
+    }
 
     function addEducation() {
-      const section = document.getElementById('educationSection');
-      const div = document.createElement('div');
-      div.innerHTML = `
-        <input type="text" placeholder="Institution Name" required />
-        <input type="text" placeholder="Qualification" required />
-        <input type="text" placeholder="Year Completed" required />
-        <button type="button" class="btn remove-btn" onclick="this.parentElement.remove()">Remove</button>
-      `;
-      section.appendChild(div);
+      document.getElementById('educationSection').appendChild(createInputSet('education'));
     }
 
     function addExperience() {
-      const section = document.getElementById('experienceSection');
-      const div = document.createElement('div');
-      div.innerHTML = `
-        <input type="text" placeholder="Company Name" required />
-        <input type="text" placeholder="Position" required />
-        <textarea placeholder="Duties" required></textarea>
-        <button type="button" class="btn remove-btn" onclick="this.parentElement.remove()">Remove</button>
-      `;
-      section.appendChild(div);
+      document.getElementById('experienceSection').appendChild(createInputSet('experience'));
     }
 
     function addSkill() {
-      const section = document.getElementById('skillsSection');
-      const div = document.createElement('div');
-      div.innerHTML = `
-        <input type="text" placeholder="Skill" required />
-        <button type="button" class="btn remove-btn" onclick="this.parentElement.remove()">Remove</button>
-      `;
-      section.appendChild(div);
+      document.getElementById('skillsSection').appendChild(createInputSet('skill'));
     }
 
-    document.getElementById('cvForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-      const name = capitalizeWords(document.getElementById('fullName').value);
-      const about = document.getElementById('aboutMe').value;
+    function generateCV() {
+      const fullName = capitalizeWords(document.getElementById('fullName').value);
+      const phone = capitalizeWords(document.getElementById('phoneNumber').value);
+      const email = document.getElementById('emailAddress').value;
+      const address = capitalizeWords(document.getElementById('homeAddress').value);
+      const about = document.getElementById('aboutMe').value || aboutMeOptions[Math.floor(Math.random() * aboutMeOptions.length)];
 
-      let html = `<h2>Curriculum Vitae</h2><p><strong>Name:</strong> ${name}</p><p><strong>About Me:</strong> ${about}</p>`;
+      if (!fullName) return;
+
+      let html = `<h1 style="text-align:center">Curriculum Vitae</h1>`;
+      html += `<p><strong>Full Name:</strong> ${fullName}</p>`;
+      html += `<p><strong>Phone:</strong> ${phone}</p>`;
+      html += `<p><strong>Email:</strong> ${email}</p>`;
+      html += `<p><strong>Address:</strong> ${address}</p>`;
+      html += `<p><strong>About Me:</strong> ${about}</p>`;
 
       const eduInputs = document.querySelectorAll('#educationSection > div');
-      if (eduInputs.length) {
-        html += '<h3>Education</h3>';
-        eduInputs.forEach(div => {
-          const [inst, qual, year] = div.querySelectorAll('input');
-          html += `<p>${capitalizeWords(inst.value)}, ${capitalizeWords(qual.value)}, ${year.value}</p>`;
-        });
-      }
+      html += `<h3>Education</h3>`;
+      eduInputs.forEach(edu => {
+        const inputs = edu.querySelectorAll('input');
+        if (inputs.length === 3) {
+          html += `<p>${capitalizeWords(inputs[0].value)}, ${capitalizeWords(inputs[1].value)}, ${inputs[2].value}</p>`;
+        }
+      });
 
       const expInputs = document.querySelectorAll('#experienceSection > div');
-      if (expInputs.length) {
-        html += '<h3>Experience</h3>';
-        expInputs.forEach(div => {
-          const [comp, pos] = div.querySelectorAll('input');
-          const duties = div.querySelector('textarea');
-          html += `<p>${capitalizeWords(comp.value)}, ${capitalizeWords(pos.value)}, ${capitalizeWords(duties.value)}</p>`;
-        });
-      }
+      html += `<h3>Experience</h3>`;
+      expInputs.forEach(exp => {
+        const inputs = exp.querySelectorAll('input, textarea');
+        if (inputs.length === 3) {
+          html += `<p><strong>${capitalizeWords(inputs[0].value)}</strong> - ${capitalizeWords(inputs[1].value)}<br>Duties: ${capitalizeWords(inputs[2].value)}</p>`;
+        }
+      });
 
-      const skillInputs = document.querySelectorAll('#skillsSection > div input');
-      if (skillInputs.length) {
-        html += '<h3>Skills</h3><ul>';
-        skillInputs.forEach(input => {
-          html += `<li>${capitalizeWords(input.value)}</li>`;
-        });
-        html += '</ul>';
-      }
+      const skillInputs = document.querySelectorAll('#skillsSection input');
+      html += `<h3>Skills</h3><ul>`;
+      skillInputs.forEach(skill => {
+        html += `<li>${capitalizeWords(skill.value)}</li>`;
+      });
+      html += `</ul>`;
 
-      html += '<footer style="margin-top: 20px; font-size: 0.8rem; text-align: center;">Created on www.re-el-branding.rf.gd</footer>';
+      html += `<footer><small>Created on www.re-el-branding.rf.gd</small></footer>`;
 
-      const content = document.getElementById('cvContent');
-      content.innerHTML = html;
-
-      const preview = document.getElementById('cvPreview');
-      preview.classList.remove('hidden');
-    });
-
-    function capitalizeWords(str) {
-      return str.replace(/\b\w/g, char => char.toUpperCase());
+      document.getElementById('cvPreview').innerHTML = html;
+      document.getElementById('cvPreview').classList.remove('hidden');
+      document.getElementById('downloadBtn').classList.remove('hidden');
+      document.getElementById('shareBtn').classList.remove('hidden');
     }
 
-    document.getElementById('downloadBtn').addEventListener('click', () => {
-      const element = document.getElementById('cvContent');
-      const name = document.getElementById('fullName').value;
-      html2pdf().set({
-        margin: 10,
-        filename: `CV of ${name}.pdf`,
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      }).from(element).save();
-    });
+    function downloadPDF() {
+      const name = document.getElementById('fullName').value.trim();
+      const filename = `CV of ${name}`;
+      const doc = new jspdf.jsPDF();
+      doc.html(document.getElementById('cvPreview'), {
+        callback: function (pdf) {
+          pdf.save(`${filename}.pdf`);
+        },
+        margin: [10, 10, 10, 10],
+        autoPaging: 'text',
+        html2canvas: { scale: 0.8 },
+      });
+    }
 
-    document.getElementById('shareBtn').addEventListener('click', async () => {
-      alert('Sharing feature coming soon or not supported by browser.');
-    });
+    function shareCV() {
+      alert("Sharing feature will be integrated with native APIs or web share services.");
+    }
+
+    function capitalizeWords(str) {
+      return str.replace(/\b\w/g, l => l.toUpperCase());
+    }
   </script>
 </body>
+
 </html>
 
-  </script>
-</body>
-</html>
 
 
