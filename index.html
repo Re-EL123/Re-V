@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -13,149 +14,138 @@
       padding: 2rem;
     }
 
-    h1 {
-      text-align: center;
-      font-size: 2rem;
-      margin-bottom: 1rem;
-    }
+h1 {
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      border-radius: 10px;
-      padding: 2rem;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
-    }
+.container {
+  max-width: 800px;
+  margin: auto;
+  background: white;
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
 
-    .theme-selector {
-      margin-bottom: 1rem;
-    }
+.theme-selector {
+  margin-bottom: 1rem;
+}
 
-    .field {
-      margin-bottom: 1rem;
-    }
+.field {
+  margin-bottom: 1rem;
+}
 
-    input, textarea, select, button {
-      width: 100%;
-      padding: 0.6rem;
-      font-size: 1rem;
-      margin-top: 0.3rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
+input, textarea, select, button {
+  width: 100%;
+  padding: 0.6rem;
+  font-size: 1rem;
+  margin-top: 0.3rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
 
-    .cv-preview {
-      border: 1px solid #ccc;
-      padding: 1rem;
-      margin-top: 2rem;
-      background: #fff;
-      page-break-after: always;
-      transform: scale(1);
-      transform-origin: top left;
-    }
+.cv-preview {
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-top: 2rem;
+  background: #fff;
+  page-break-after: always;
+  transform: scale(1);
+  transform-origin: top left;
+}
 
-    .cv-heading {
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      margin-bottom: 1rem;
-    }
+.cv-heading {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
 
-    .action-buttons {
-      display: flex;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
 
-    .hidden {
-      display: none;
-    }
+.hidden {
+  display: none;
+}
 
-    .section {
-      margin-top: 1rem;
-    }
+.section {
+  margin-top: 1rem;
+}
 
-    .watermark {
-      text-align: center;
-      font-size: 10px;
-      margin-top: 1rem;
-      color: gray;
-    }
+.watermark {
+  text-align: center;
+  font-size: 10px;
+  margin-top: 1rem;
+  color: gray;
+}
 
-    /* Existing 6 themes */
-    .theme-1 { font-family: 'Georgia'; color: #333; }
-    .theme-2 { font-family: 'Verdana'; color: #444; }
-    .theme-3 { font-family: 'Courier New'; color: #222; }
-    .theme-4 { font-family: 'Tahoma'; color: #111; }
-    .theme-5 { font-family: 'Lucida Console'; color: #555; }
-    .theme-6 { font-family: 'Palatino Linotype'; color: #666; }
+/* Original Themes */
+.theme-1 { font-family: 'Georgia'; color: #333; }
+.theme-2 { font-family: 'Verdana'; color: #444; }
+.theme-3 { font-family: 'Courier New'; color: #222; }
+.theme-4 { font-family: 'Tahoma'; color: #111; }
+.theme-5 { font-family: 'Lucida Console'; color: #555; }
+.theme-6 { font-family: 'Palatino Linotype'; color: #666; }
 
-    /* Added 40 more themes */
-    /* Astrological (7-18) */
-    .theme-7  { font-family: 'Astrocharm'; color: #FF4500; } /* Aries */
-    .theme-8  { font-family: 'ZodiacSerif'; color: #DAA520; } /* Taurus */
-    .theme-9  { font-family: 'Celestial'; color: #8A2BE2; } /* Gemini */
-    .theme-10 { font-family: 'Libratype'; color: #00CED1; } /* Cancer */
-    .theme-11 { font-family: 'LeoBold'; color: #FFD700; } /* Leo */
-    .theme-12 { font-family: 'Virgosans'; color: #32CD32; } /* Virgo */
-    .theme-13 { font-family: 'ScorpioScript'; color: #DC143C; } /* Libra */
-    .theme-14 { font-family: 'Sagittarian'; color: #FF8C00; } /* Scorpio */
-    .theme-15 { font-family: 'Capricornia'; color: #2F4F4F; } /* Sagittarius */
-    .theme-16 { font-family: 'Aquarian'; color: #1E90FF; } /* Capricorn */
-    .theme-17 { font-family: 'PiscesFlow'; color: #BA55D3; } /* Aquarius */
-    .theme-18 { font-family: 'AstroNova'; color: #20B2AA; } /* Pisces */
+/* 40 New Themes */
+.theme-7  { font-family: 'Cinzel';           color: #B22222; } /* Astrological Aries */
+.theme-8  { font-family: 'Papyrus';         color: #DAA520; } /* Astrological Taurus */
+.theme-9  { font-family: 'Merriweather';    color: #8A2BE2; } /* Astrological Gemini */
+.theme-10 { font-family: 'Dancing Script';  color: #FF69B4; } /* Astrological Cancer */
+.theme-11 { font-family: 'Playfair Display';color: #FF8C00; } /* Astrological Leo */
+.theme-12 { font-family: 'Roboto Slab';     color: #20B2AA; } /* Astrological Virgo */
+.theme-13 { font-family: 'Great Vibes';     color: #6A5ACD; } /* Astrological Libra */
+.theme-14 { font-family: 'Libre Baskerville';color: #FF4500; } /* Astrological Scorpio */
+.theme-15 { font-family: 'Cormorant Upright';color: #2E8B57; } /* Astrological Sagittarius */
+.theme-16 { font-family: 'Astloch';         color: #1E90FF; } /* Astrological Capricorn */
+.theme-17 { font-family: 'Galada';          color: #DA70D6; } /* Astrological Aquarius */
+.theme-18 { font-family: 'Yellowtail';      color: #FFD700; } /* Astrological Pisces */
+.theme-19 { font-family: 'Herbarium';       color: #556B2F; } /* Herbal Mint */
+.theme-20 { font-family: 'Petit Formal';   color: #8B4513; } /* Herbal Sage */
+.theme-21 { font-family: 'Aleo';            color: #2F4F4F; } /* Herbal Rosemary */
+.theme-22 { font-family: 'Amatica SC';      color: #808000; } /* Herbal Thyme */
+.theme-23 { font-family: 'Covered By Your Grace'; color: #006400; } /* Herbal Basil */
+.theme-24 { font-family: 'Charmonman';     color: #228B22; } /* Herbal Lavender */
+.theme-25 { font-family: 'Pineapple';       color: #9ACD32; } /* Herbal Chamomile */
+.theme-26 { font-family: 'Pacifico';        color: #8FBC8F; } /* Colourful Sunset */
+.theme-27 { font-family: 'Satisfy';         color: #FF1493; } /* Colourful Blossom */
+.theme-28 { font-family: 'Kaushan Script';  color: #FF6347; } /* Colourful Coral */
+.theme-29 { font-family: 'Indie Flower';    color: #1E90FF; } /* Colourful Ocean */
+.theme-30 { font-family: 'Shadows Into Light'; color: #00CED1; } /* Colourful Teal */
+.theme-31 { font-family: 'Gloria Hallelujah'; color: #9400D3; } /* Colourful Violet */
+.theme-32 { font-family: 'Rock Salt';       color: #FF7F50; } /* Colourful Peach */
+.theme-33 { font-family: 'Josefin Sans';    color: #DC143C; } /* Bold Crimson */
+.theme-34 { font-family: 'Anton';           color: #000000; } /* Bold Monochrome */
+.theme-35 { font-family: 'Bebas Neue';      color: #FF0000; } /* Bold Scarlet */
+.theme-36 { font-family: 'Oswald';          color: #800000; } /* Bold Maroon */
+.theme-37 { font-family: 'Lora';            color: #00008B; } /* Masculine Navy */
+.theme-38 { font-family: 'PT Serif';        color: #2F4F4F; } /* Masculine Slate */
+.theme-39 { font-family: 'Play';            color: #4B0082; } /* Feminine Indigo */
+.theme-40 { font-family: 'Amatic SC';       color: #FF69B4; } /* Feminine Pink */
+.theme-41 { font-family: 'Crimson Text';    color: #8B0000; } /* Feminine Rose */
+.theme-42 { font-family: 'Vollkorn';        color: #C71585; } /* Feminine Magenta */
+.theme-43 { font-family: 'Bitter';          color: #483D8B; } /* Balanced Grey */
+.theme-44 { font-family: 'Ubuntu';          color: #2E8B57; } /* Balanced Emerald */
+.theme-45 { font-family: 'Josefin Slab';    color: #4682B4; } /* Balanced Steel */
+.theme-46 { font-family: 'Spectral';        color: #A0522D; } /* Balanced Chestnut */
 
-    /* Herbal (19-26) */
-    .theme-19 { font-family: 'Leafy'; color: #228B22; } /* Basil */
-    .theme-20 { font-family: 'Minty'; color: #98FB98; } /* Mint */
-    .theme-21 { font-family: 'LavenderScript'; color: #E6E6FA; } /* Lavender */
-    .theme-22 { font-family: 'Rosewood'; color: #FFB6C1; } /* Rose */
-    .theme-23 { font-family: 'Chamomile'; color: #FFDAB9; } /* Chamomile */
-    .theme-24 { font-family: 'ThymeText'; color: #808000; } /* Thyme */
-    .theme-25 { font-family: 'SageSans'; color: #77815C; } /* Sage */
-    .theme-26 { font-family: 'Herbalist'; color: #556B2F; } /* Mixed Herbs */
+.remove-btn {
+  background: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+  width: auto;
+  padding: 0.3rem 0.6rem;
+}
 
-    /* Colourful (27-36) */
-    .theme-27 { font-family: 'Comic Sans MS'; color: #FF1493; } /* Pink Pop */
-    .theme-28 { font-family: 'Impact'; color: #1E90FF; } /* Blue Blast */
-    .theme-29 { font-family: 'Verdana'; color: #32CD32; } /* Green Glow */
-    .theme-30 { font-family: 'Courier New'; color: #FFD700; } /* Goldenrod */
-    .theme-31 { font-family: 'Tahoma'; color: #FF8C00; } /* Orange Zest */
-    .theme-32 { font-family: 'Georgia'; color: #4B0082; } /* Indigo Dream */
-    .theme-33 { font-family: 'Trebuchet MS'; color: #00FA9A; } /* Mint Cream */
-    .theme-34 { font-family: 'Arial'; color: #FF4500; } /* Tomato */
-    .theme-35 { font-family: 'Lucida Console'; color: #8B0000; } /* Dark Red */
-    .theme-36 { font-family: 'Palatino Linotype'; color: #00008B; } /* Dark Blue */
-
-    /* Bold and Contrasting (37-41) */
-    .theme-37 { font-family: 'Impact'; color: #000000; background: #FFEB3B; }
-    .theme-38 { font-family: 'Arial Black'; color: #FFFFFF; background: #000000; }
-    .theme-39 { font-family: 'Franklin Gothic Medium'; color: #FFFFFF; background: #3F51B5; }
-    .theme-40 { font-family: 'Gill Sans Ultra Bold'; color: #FFFFFF; background: #E91E63; }
-    .theme-41 { font-family: 'Lucida Sans Unicode'; color: #000000; background: #00FF00; }
-
-    /* Masculine (42-44) */
-    .theme-42 { font-family: 'Rockwell'; color: #2E3B4E; }
-    .theme-43 { font-family: 'Helvetica'; color: #344955; }
-    .theme-44 { font-family: 'Roboto'; color: #1C1C1C; }
-
-    /* Feminine (45-46) */
-    .theme-45 { font-family: 'Brush Script MT'; color: #D87093; }
-    .theme-46 { font-family: 'Lucida Handwriting'; color: #FF69B4; }
-
-    .remove-btn {
-      background: red;
-      color: white;
-      border: none;
-      cursor: pointer;
-      width: auto;
-      padding: 0.3rem 0.6rem;
-    }
-
-    datalist option {
-      font-size: 1rem;
-    }
+datalist option {
+  font-size: 1rem;
+}
   </style>
 </head>
 <body>
@@ -170,62 +160,56 @@
         <option value="theme-4">Trusted Simplicity</option>
         <option value="theme-5">Sharp Console</option>
         <option value="theme-6">Sophisticated Serif</option>
-        <!-- Added 40 more options -->
-        <!-- Astrological -->
-        <option value="theme-7">Aries Flame</option>
-        <option value="theme-8">Taurus Earth</option>
-        <option value="theme-9">Gemini Duality</option>
-        <option value="theme-10">Cancer Moonlight</option>
-        <option value="theme-11">Leo Radiance</option>
-        <option value="theme-12">Virgo Clarity</option>
-        <option value="theme-13">Scorpio Depth</option>
-        <option value="theme-14">Sagittarius Arrow</option>
-        <option value="theme-15">Capricorn Peak</option>
-        <option value="theme-16">Aquarius Wave</option>
-        <option value="theme-17">Pisces Dream</option>
-        <option value="theme-18">Astro Nova</option>
-        <!-- Herbal -->
-        <option value="theme-19">Basil Breeze</option>
-        <option value="theme-20">Mint Chill</option>
-        <option value="theme-21">Lavender Calm</option>
-        <option value="theme-22">Rose Petal</option>
-        <option value="theme-23">Chamomile Ease</option>
-        <option value="theme-24">Thyme Wisdom</option>
-        <option value="theme-25">Sage Wisdom</option>
-        <option value="theme-26">Herbal Harmony</option>
-        <!-- Colourful -->
-        <option value="theme-27">Pink Pop</option>
-        <option value="theme-28">Blue Blast</option>
-        <option value="theme-29">Green Glow</option>
-        <option value="theme-30">Goldenrod Shine</option>
-        <option value="theme-31">Orange Zest</option>
-        <option value="theme-32">Indigo Dream</option>
-        <option value="theme-33">Mint Cream</option>
-        <option value="theme-34">Tomato Bold</option>
-        <option value="theme-35">Dark Crimson</option>
-        <option value="theme-36">Deep Ocean</option>
-        <!-- Bold -->
-        <option value="theme-37">Solar Highlight</option>
-        <option value="theme-38">Night Contrast</option>
-        <option value="theme-39">Midnight Navy</option>
-        <option value="theme-40">Rose Glam</option>
-        <option value="theme-41">Neon Lime</option>
-        <!-- Masculine -->
-        <option value="theme-42">Steel Blue</option>
-        <option value="theme-43">Slate Modern</option>
-        <option value="theme-44">Urban Edge</option>
-        <!-- Feminine -->
-        <option value="theme-45">Blush Script</option>
-        <option value="theme-46">Pink Handwriting</option>
+        <!-- 40 New Options -->
+        <option value="theme-7">Astrological Aries</option>
+        <option value="theme-8">Astrological Taurus</option>
+        <option value="theme-9">Astrological Gemini</option>
+        <option value="theme-10">Astrological Cancer</option>
+        <option value="theme-11">Astrological Leo</option>
+        <option value="theme-12">Astrological Virgo</option>
+        <option value="theme-13">Astrological Libra</option>
+        <option value="theme-14">Astrological Scorpio</option>
+        <option value="theme-15">Astrological Sagittarius</option>
+        <option value="theme-16">Astrological Capricorn</option>
+        <option value="theme-17">Astrological Aquarius</option>
+        <option value="theme-18">Astrological Pisces</option>
+        <option value="theme-19">Herbal Mint</option>
+        <option value="theme-20">Herbal Sage</option>
+        <option value="theme-21">Herbal Rosemary</option>
+        <option value="theme-22">Herbal Thyme</option>
+        <option value="theme-23">Herbal Basil</option>
+        <option value="theme-24">Herbal Lavender</option>
+        <option value="theme-25">Herbal Chamomile</option>
+        <option value="theme-26">Colourful Sunset</option>
+        <option value="theme-27">Colourful Blossom</option>
+        <option value="theme-28">Colourful Coral</option>
+        <option value="theme-29">Colourful Ocean</option>
+        <option value="theme-30">Colourful Teal</option>
+        <option value="theme-31">Colourful Violet</option>
+        <option value="theme-32">Colourful Peach</option>
+        <option value="theme-33">Bold Crimson</option>
+        <option value="theme-34">Bold Monochrome</option>
+        <option value="theme-35">Bold Scarlet</option>
+        <option value="theme-36">Bold Maroon</option>
+        <option value="theme-37">Masculine Navy</option>
+        <option value="theme-38">Masculine Slate</option>
+        <option value="theme-39">Feminine Indigo</option>
+        <option value="theme-40">Feminine Pink</option>
+        <option value="theme-41">Feminine Rose</option>
+        <option value="theme-42">Feminine Magenta</option>
+        <option value="theme-43">Balanced Grey</option>
+        <option value="theme-44">Balanced Emerald</option>
+        <option value="theme-45">Balanced Steel</option>
+        <option value="theme-46">Balanced Chestnut</option>
       </select>
     </div>
-    <!-- Rest of content remains unchanged -->
     <div class="field"><label>Full Name</label><input id="name" /></div>
     <div class="field"><label>Phone Number</label><input id="phone" /></div>
     <div class="field"><label>Email Address</label><input id="email" /></div>
     <div class="field"><label>Home Address</label><input id="address" /></div>
     <div class="field"><label>About Me</label><input id="about" list="aboutList" /></div>
     <datalist id="aboutList"></datalist>
+    <div class="field"><label>About Developer</label><p>View <a href="README.md" target="_blank">README.md</a></p></div>
 
     <div id="education-section" class="section">
       <label>Education</label>
@@ -274,7 +258,70 @@
       "Thrives In Dynamic Work Environments.",
       "Skilled At Managing Multiple Priorities.",
       "Positive, Proactive, And Persevering.",
-      "Willing To Go The Extra Mile Every Time."
+      "Willing To Go The Extra Mile Every Time.",
+      /* 80 More Lengthier Descriptions */
+      "An Enthusiastic Innovator Who Brings Creative Solutions To Complex Challenges With A Smile.",
+      "A Seasoned Professional Skilled In Adapting To Rapidly Changing Environments While Maintaining Quality And Standards.",
+      "A Thoughtful Strategist Who Excels At Analyzing Data And Turning Insights Into Actionable Plans.",
+      "A Dynamic Leader Dedicated To Cultivating Collaborative Team Cultures That Foster Growth And Success.",
+      "An Articulate Presenter Capable Of Communicating Complex Ideas Clearly And Persuasively To Diverse Audiences.",
+      "A Meticulous Planner Who Balances Creativity With Structure To Deliver Projects On Time And Within Budget.",
+      "A Passionate Advocate For Continuous Learning, Regularly Updating Skills To Stay Ahead Of Industry Trends.",
+      "A Resourceful Problem-Solver Who Thrives Under Pressure And Turns Obstacles Into Opportunities.",
+      "A Customer-Centric Professional Committed To Exceeding Expectations Through Exceptional Service And Support.",
+      "A Results-Driven Specialist With A Demonstrated Track Record Of Achieving And Surpassing Targets.",
+      "An Adaptable Collaborator Who Values Diversity And Leverages Team Strengths To Achieve Shared Goals.",
+      "A Forward-Thinking Visionary Able To Anticipate Market Needs And Innovate Proactively.",
+      "A Resilient Individual Who Embraces Feedback And Uses It As A Catalyst For Improvement.",
+      "A Proficient Multitasker Skilled At Juggling Multiple Projects Without Sacrificing Attention To Detail.",
+      "A Curious Explorer Eager To Dive Into New Technologies And Methodologies To Enhance Performance.",
+      "An Empathetic Listener Who Builds Trust Through Genuine Engagement And Open Communication.",
+      "A Mindful Decision-Maker Who Balances Intuition With Data-Driven Analysis For Optimal Outcomes.",
+      "A Passionate Mentor Committed To Supporting Colleagues Through Coaching And Knowledge Sharing.",
+      "A Holistic Thinker Who Connects The Dots Across Functions To Drive Integrated Solutions.",
+      "A Collaborative Partner Who Knows How To Leverage Cross-Functional Expertise For Maximum Impact.",
+      "An Inspiring Team Builder Who Motivates Others To Strive For Excellence And Innovation.",
+      "A Detail-Oriented Quality Assurance Expert Who Guarantees Products Meet Rigorous Standards.",
+      "A Proactive Contributor Who Brings Initiative And Enthusiasm To Every Assignment.",
+      "A Seasoned Negotiator With The Skill To Secure Beneficial Outcomes In High-Stakes Situations.",
+      "A Resourceful Researcher Who Uncovers Insights That Drive Strategic Decision-Making.",
+      "A Tech-Savvy Enthusiast Who Integrates Emerging Tools To Optimize Workflows And Productivity.",
+      "A Compassionate Leader Focused On Employee Well-Being And Sustainable Team Performance.",
+      "A Visionary Designer Who Blends Aesthetics And Functionality For Engaging User Experiences.",
+      "A Strategic Marketer Who Crafts Compelling Narratives That Resonate With Target Audiences.",
+      "A Skilled Networker Who Establishes And Cultivates Long-Lasting Professional Relationships.",
+      "A Meticulous Data Analyst Who Transforms Raw Numbers Into Clear, Actionable Reports.",
+      "A Persuasive Copywriter Who Captivates Audiences With Clear, Engaging, And Concise Messaging.",
+      "An Innovative Developer Who Writes Clean, Scalable Code To Build Robust Digital Solutions.",
+      "A Diligent Auditor Who Ensures Compliance Through Thorough Reviews And Critical Evaluations.",
+      "A Budding Entrepreneur Who Approaches Every Task With An Owner’s Mindset And Unwavering Commitment.",
+      "A Creative Storyteller Who Engages Readers By Weaving Data And Narratives Into Compelling Proposals.",
+      "A Well-Rounded Specialist With Both Technical Expertise And Strong Interpersonal Skills.",
+      "A Methodical Researcher Who Uses Established Best Practices To Drive Insightful Conclusions.",
+      "A Visionary Planner Who Aligns Initiatives With Long-Term Organizational Objectives.",
+      "A Passionate Educator Who Delivers Training And Workshops To Empower Stakeholders.",
+      "A Dedicated Health And Safety Advocate Who Implements Protocols To Ensure Workplace Security.",
+      "A Prolific Writer Who Crafts Thorough Documentation That Enhances User Understanding.",
+      "An Ethical Professional Who Upholds Integrity And Transparency In Every Undertaking.",
+      "A Proficient Facilitator Who Guides Workshops And Meetings Toward Effective, Consensus-Driven Results.",
+      "A Sustainability Champion Who Drives Green Initiatives And Corporate Responsibility Efforts.",
+      "A Perceptive Psychologist Who Applies Behavioral Insights To Optimize Team Dynamics.",
+      "A Versatile Artist Who Blends Traditional Techniques With Digital Tools For Unique Creations.",
+      "A Dedicated Research Scientist Who Conducts Rigorous Experiments With Precision And Care.",
+      "A Strategic CFO Candidate Skilled In Fiscal Planning, Risk Management, And Regulatory Compliance.",
+      "A Proactive Legal Advisor Who Navigates Complex Regulations To Safeguard Organizational Interests.",
+      "A Forward-Looking Urban Planner Who Designs Sustainable, Community-Centric Development Projects.",
+      "A Compassionate Social Worker Who Advocates For Vulnerable Populations With Empathy And Professionalism.",
+      "A Tactical Operations Manager Who Oversees Logistics And Streamlines Supply Chain Processes.",
+      "A Distinguished Educator Who Shapes Curricula To Inspire And Motivate Learners Of All Ages.",
+      "A Global Relations Expert Who Manages Cross-Cultural Collaborations With Diplomacy And Tact.",
+      "A Dedicated Healthcare Administrator Who Coordinates Patient Services For Optimal Care Delivery.",
+      "A Visionary CEO Candidate Who Aligns Teams Behind A Unified Mission And Growth Strategy.",
+      "A Specialist In AI Integration Who Applies Machine Learning To Enhance Operational Efficiencies.",
+      "A Cybersecurity Enthusiast Who Implements Robust Defenses Against Emerging Threats.",
+      "An Environmental Scientist Who Conducts Fieldwork And Data Analysis To Drive Conservation Efforts.",
+      "An Award-Winning Journalist Who Reports With Integrity, Depth, And Engaging Storytelling.",
+      "A Project Management Professional With PMP Certification And Proven Delivery Records.",
     ];
 
     const aboutDatalist = document.getElementById('aboutList');
@@ -340,5 +387,65 @@
         const inputs = div.querySelectorAll('input');
         const textarea = div.querySelector('textarea');
         if (inputs.length >= 3 && textarea) {
-          expHTML += `<p><strong>${capitalizeWords(inputs[0].value)}</strong> — ${capitalizeWords(inputs[1].value)}<br/>${capitalizeWords(textarea
+          expHTML += `<p><strong>${capitalizeWords(inputs[0].value)}</strong> — ${capitalizeWords(inputs[1].value)}<br/>${capitalizeWords(textarea.value)}<br/><em>Reference:</em> ${inputs[2].value}</p>`;
+        }
+      });
 
+      document.querySelectorAll('#skills-section .field').forEach(div => {
+        const input = div.querySelector('input');
+        if (input) {
+          skillHTML += `<li>${capitalizeWords(input.value)}</li>`;
+        }
+      });
+
+      const preview = document.getElementById('cv-preview');
+      preview.className = `cv-preview ${theme}`;
+      preview.innerHTML = `
+        <div class="cv-heading">Curriculum Vitae</div>
+        <h2>${name}</h2>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Address:</strong> ${address}</p>
+        <p><strong>About Me:</strong> ${capitalizeWords(about)}</p>
+        <h3>Education</h3>${eduHTML}
+        <h3>Experience</h3>${expHTML}
+        <h3>Skills</h3><ul>${skillHTML}</ul>
+        <div class="watermark">Created on www.re-el-branding.rf.gd</div>
+      `;
+      preview.classList.remove('hidden');
+      document.getElementById('downloadBtn').classList.remove('hidden');
+      document.getElementById('shareBtn').classList.remove('hidden');
+    }
+
+    function downloadCV() {
+      const element = document.getElementById('cv-preview');
+      const name = capitalizeWords(document.getElementById('name').value);
+      html2pdf().set({
+        filename: `CV Of ${name}.pdf`,
+        jsPDF: { format: 'a4' },
+        html2canvas: { scale: 2 }
+      }).from(element).save();
+    }
+
+    function shareCV() {
+      alert('Use your browser share feature or send the downloaded PDF to share it.');
+    }
+
+    function saveData() {
+      const formData = document.querySelector('.container').innerHTML;
+      localStorage.setItem('rev_cv_data', formData);
+      alert('Your data has been saved locally.');
+    }
+
+    function loadData() {
+      const data = localStorage.getItem('rev_cv_data');
+      if (data) {
+        document.querySelector('.container').innerHTML = data;
+        alert('Your saved data has been loaded.');
+      } else {
+        alert('No saved data found.');
+      }
+    }
+  </script>
+</body>
+</html>
