@@ -61,5 +61,5 @@
 
 ## 🔗 Created By
 
-**Elijah / Re-EL Branding**  
+**Akani Shibiri / Re-EL Branding**  
 🌐 [www.re-el-branding.rf.gd](http://www.re-el-branding.rf.gd)
