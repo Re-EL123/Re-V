@@ -98,6 +98,10 @@
       width: auto;
       padding: 0.3rem 0.6rem;
     }
+
+    datalist option {
+      font-size: 1rem;
+    }
   </style>
 </head>
 <body>
@@ -118,7 +122,8 @@
     <div class="field"><label>Phone Number</label><input id="phone" /></div>
     <div class="field"><label>Email Address</label><input id="email" /></div>
     <div class="field"><label>Home Address</label><input id="address" /></div>
-    <div class="field"><label>About Me</label><textarea id="about"></textarea></div>
+    <div class="field"><label>About Me</label><input id="about" list="aboutList" /></div>
+    <datalist id="aboutList"></datalist>
 
     <div id="education-section" class="section">
       <label>Education</label>
@@ -135,6 +140,8 @@
 
     <div class="action-buttons">
       <button onclick="generateCV()">Generate CV</button>
+      <button onclick="saveData()">Save</button>
+      <button onclick="loadData()">Load</button>
       <button id="downloadBtn" class="hidden" onclick="downloadCV()">Download PDF</button>
       <button id="shareBtn" class="hidden" onclick="shareCV()">Share PDF</button>
     </div>
@@ -167,7 +174,12 @@
       "Willing To Go The Extra Mile Every Time."
     ];
 
-    let eduCount = 0, expCount = 0, skillCount = 0;
+    const aboutDatalist = document.getElementById('aboutList');
+    aboutMeList.forEach(text => {
+      const option = document.createElement('option');
+      option.value = text;
+      aboutDatalist.appendChild(option);
+    });
 
     function capitalizeWords(str) {
       return str.replace(/\b\w/g, c => c.toUpperCase());
@@ -190,6 +202,7 @@
           <input placeholder="Company Name" />
           <input placeholder="Position" />
           <textarea placeholder="Duties"></textarea>
+          <input placeholder="Reference Contact" />
           <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
         `;
       } else if (type === 'skills') {
@@ -223,8 +236,8 @@
       document.querySelectorAll('#experience-section .field').forEach(div => {
         const inputs = div.querySelectorAll('input');
         const textarea = div.querySelector('textarea');
-        if (inputs.length === 2 && textarea) {
-          expHTML += `<p><strong>${capitalizeWords(inputs[0].value)}</strong> — ${capitalizeWords(inputs[1].value)}<br/>${capitalizeWords(textarea.value)}</p>`;
+        if (inputs.length >= 3 && textarea) {
+          expHTML += `<p><strong>${capitalizeWords(inputs[0].value)}</strong> — ${capitalizeWords(inputs[1].value)}<br/>${capitalizeWords(textarea.value)}<br/><em>Reference:</em> ${inputs[2].value}</p>`;
         }
       });
 
@@ -266,6 +279,22 @@
 
     function shareCV() {
       alert('Use your browser share feature or send the downloaded PDF to share it.');
+    }
+
+    function saveData() {
+      const formData = document.querySelector('.container').innerHTML;
+      localStorage.setItem('rev_cv_data', formData);
+      alert('Your data has been saved locally.');
+    }
+
+    function loadData() {
+      const data = localStorage.getItem('rev_cv_data');
+      if (data) {
+        document.querySelector('.container').innerHTML = data;
+        alert('Your saved data has been loaded.');
+      } else {
+        alert('No saved data found.');
+      }
     }
   </script>
 </body>
