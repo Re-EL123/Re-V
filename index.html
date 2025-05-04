@@ -1,244 +1,273 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Re-V CV Maker Tool</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Roboto&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: 'Roboto', sans-serif;
-      background: rgba(255, 255, 255, 0.6);
-      backdrop-filter: blur(8px);
       margin: 0;
-      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e0e0e0 30%, #ffffff);
+      backdrop-filter: blur(6px);
+      padding: 2rem;
     }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
     .container {
       max-width: 800px;
       margin: auto;
-      padding: 20px;
       background: white;
-      border-radius: 16px;
-      box-shadow: 0 0 30px rgba(0,0,0,0.1);
-      animation: fadeIn 1s ease-in-out;
-    }
-    h1 {
-      text-align: center;
-      font-family: 'Playfair Display', serif;
-      font-size: 2em;
-      margin-bottom: 1em;
-    }
-    .field-group {
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
-    input, textarea, select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    .button {
-      padding: 10px 20px;
-      background-color: #007aff;
-      color: white;
-      border: none;
       border-radius: 10px;
-      cursor: pointer;
-      margin: 10px 5px;
+      padding: 2rem;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
     }
-    .button:hover {
-      background-color: #005bb5;
+
+    .theme-selector {
+      margin-bottom: 1rem;
     }
-    #cvPreview {
+
+    .field {
+      margin-bottom: 1rem;
+    }
+
+    input, textarea, select, button {
+      width: 100%;
+      padding: 0.6rem;
+      font-size: 1rem;
+      margin-top: 0.3rem;
+      border-radius: 5px;
       border: 1px solid #ccc;
-      padding: 20px;
-      margin-top: 20px;
-      font-size: 14px;
-      font-family: 'Playfair Display', serif;
-      background: white;
     }
+
+    .cv-preview {
+      border: 1px solid #ccc;
+      padding: 1rem;
+      margin-top: 2rem;
+      background: #fff;
+      page-break-after: always;
+      transform: scale(1);
+      transform-origin: top left;
+    }
+
+    .cv-heading {
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
     .hidden {
       display: none;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+
+    .section {
+      margin-top: 1rem;
+    }
+
+    .watermark {
+      text-align: center;
+      font-size: 10px;
+      margin-top: 1rem;
+      color: gray;
+    }
+
+    .theme-1 { font-family: 'Georgia'; color: #333; }
+    .theme-2 { font-family: 'Verdana'; color: #444; }
+    .theme-3 { font-family: 'Courier New'; color: #222; }
+    .theme-4 { font-family: 'Tahoma'; color: #111; }
+    .theme-5 { font-family: 'Lucida Console'; color: #555; }
+    .theme-6 { font-family: 'Palatino Linotype'; color: #666; }
+
+    .remove-btn {
+      background: red;
+      color: white;
+      border: none;
+      cursor: pointer;
+      width: auto;
+      padding: 0.3rem 0.6rem;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>Re-V CV Maker Tool</h1>
-    <div class="field-group">
-      <label>Full Name</label>
-      <input type="text" id="fullName">
-      <label>Phone Number</label>
-      <input type="text" id="phone">
-      <label>Email</label>
-      <input type="email" id="email">
-      <label>Home Address</label>
-      <input type="text" id="address">
-      <label>About Me</label>
-      <select id="aboutMe"></select>
+    <div class="theme-selector">
+      <label>Choose Theme:</label>
+      <select id="theme">
+        <option value="theme-1">Classic Elegance</option>
+        <option value="theme-2">Professional Modern</option>
+        <option value="theme-3">Clean Courier</option>
+        <option value="theme-4">Trusted Simplicity</option>
+        <option value="theme-5">Sharp Console</option>
+        <option value="theme-6">Sophisticated Serif</option>
+      </select>
     </div>
-    <div id="educationFields" class="field-group">
-      <label>Education</label>
-      <button class="button" onclick="addEducation()">Add Education</button>
-    </div>
-    <div id="experienceFields" class="field-group">
-      <label>Experience</label>
-      <button class="button" onclick="addExperience()">Add Experience</button>
-    </div>
-    <div id="skillsFields" class="field-group">
-      <label>Skills</label>
-      <button class="button" onclick="addSkill()">Add Skill</button>
-    </div>
-    <button class="button" onclick="generateCV()">Generate CV</button>
-    <button id="downloadBtn" class="button hidden" onclick="downloadCV()">Download CV</button>
-    <button id="shareBtn" class="button hidden" onclick="shareCV()">Share CV</button>
+    <div class="field"><label>Full Name</label><input id="name" /></div>
+    <div class="field"><label>Phone Number</label><input id="phone" /></div>
+    <div class="field"><label>Email Address</label><input id="email" /></div>
+    <div class="field"><label>Home Address</label><input id="address" /></div>
+    <div class="field"><label>About Me</label><textarea id="about"></textarea></div>
 
-    <div id="cvPreview"></div>
+    <div id="education-section" class="section">
+      <label>Education</label>
+      <button onclick="addField('education')">Add Education</button>
+    </div>
+    <div id="experience-section" class="section">
+      <label>Experience</label>
+      <button onclick="addField('experience')">Add Experience</button>
+    </div>
+    <div id="skills-section" class="section">
+      <label>Skills</label>
+      <button onclick="addField('skills')">Add Skill</button>
+    </div>
+
+    <div class="action-buttons">
+      <button onclick="generateCV()">Generate CV</button>
+      <button id="downloadBtn" class="hidden" onclick="downloadCV()">Download PDF</button>
+      <button id="shareBtn" class="hidden" onclick="shareCV()">Share PDF</button>
+    </div>
+
+    <div id="cv-preview" class="cv-preview hidden"></div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
   <script>
     const aboutMeList = [
-      "A Highly Motivated Individual With A Passion For Excellence.",
-      "Driven By Purpose And Known For Reliable Work Ethic.",
-      "Creative Thinker And Problem Solver With A Growth Mindset.",
-      "Dedicated Team Player Focused On Delivering Quality Results.",
-      "Strategic Planner Who Thrives Under Pressure.",
-      "Excellent Communicator With A Knack For Collaboration.",
-      "Quick Learner Who Adapts Well To New Challenges.",
-      "Innovative Mindset With Attention To Detail.",
-      "Energetic And Always Ready To Learn New Things.",
-      "Versatile Professional With Experience Across Various Fields.",
-      "Confident And Capable In Both Independent And Team Settings.",
-      "Resilient And Committed To Continuous Improvement.",
-      "Proactive And Passionate About Solving Real Problems.",
-      "Well-Rounded And Focused On Holistic Development.",
-      "Empathetic Leader Who Values Diversity And Inclusion.",
-      "Technically Skilled With A Keen Eye For Design.",
-      "Efficient And Organized, Always Meeting Deadlines.",
-      "Creative Storyteller With Strong Analytical Thinking.",
-      "Goal-Oriented With An Eye For Opportunity.",
-      "Personable And Reliable With A Strong Moral Compass."
+      "A Motivated Professional With A Passion For Excellence.",
+      "Driven By Purpose, Grounded In Precision.",
+      "Creative Thinker With An Eye For Detail.",
+      "Results-Oriented With A Team-First Mentality.",
+      "Always Ready To Learn And Adapt.",
+      "Organized, Efficient, And Dependable.",
+      "Eager To Deliver Solutions That Matter.",
+      "Strategically Minded With Practical Know-How.",
+      "Dedicated To Quality And Innovation.",
+      "Lover Of Challenges And Problem Solving.",
+      "Honest, Reliable, And Goal-Focused.",
+      "Focused On Continuous Improvement.",
+      "Effective Communicator And Listener.",
+      "Analytical And Curious By Nature.",
+      "Enjoys Collaborating And Sharing Ideas.",
+      "Committed To Making A Positive Impact.",
+      "Thrives In Dynamic Work Environments.",
+      "Skilled At Managing Multiple Priorities.",
+      "Positive, Proactive, And Persevering.",
+      "Willing To Go The Extra Mile Every Time."
     ];
 
+    let eduCount = 0, expCount = 0, skillCount = 0;
+
     function capitalizeWords(str) {
-      return str.replace(/\b\w/g, l => l.toUpperCase());
+      return str.replace(/\b\w/g, c => c.toUpperCase());
     }
 
-    function randomAboutMe() {
-      const index = Math.floor(Math.random() * aboutMeList.length);
-      return aboutMeList[index];
-    }
-
-    function addEducation() {
+    function addField(type) {
+      const section = document.getElementById(`${type}-section`);
       const div = document.createElement('div');
-      div.innerHTML = `
-        <input placeholder="Institution Name" />
-        <input placeholder="Qualification" />
-        <input placeholder="Year Completed" />
-        <button onclick="this.parentElement.remove()">Remove</button>
-      `;
-      document.getElementById('educationFields').appendChild(div);
-    }
+      div.className = 'field';
 
-    function addExperience() {
-      const div = document.createElement('div');
-      div.innerHTML = `
-        <input placeholder="Company Name" />
-        <input placeholder="Position" />
-        <textarea placeholder="Duties"></textarea>
-        <button onclick="this.parentElement.remove()">Remove</button>
-      `;
-      document.getElementById('experienceFields').appendChild(div);
-    }
+      if (type === 'education') {
+        div.innerHTML = `
+          <input placeholder="Institution Name" />
+          <input placeholder="Qualification" />
+          <input placeholder="Year Completed" />
+          <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
+        `;
+      } else if (type === 'experience') {
+        div.innerHTML = `
+          <input placeholder="Company Name" />
+          <input placeholder="Position" />
+          <textarea placeholder="Duties"></textarea>
+          <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
+        `;
+      } else if (type === 'skills') {
+        div.innerHTML = `
+          <input placeholder="Skill" />
+          <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
+        `;
+      }
 
-    function addSkill() {
-      const div = document.createElement('div');
-      div.innerHTML = `
-        <input placeholder="Skill" />
-        <button onclick="this.parentElement.remove()">Remove</button>
-      `;
-      document.getElementById('skillsFields').appendChild(div);
+      section.appendChild(div);
     }
 
     function generateCV() {
-      const name = capitalizeWords(document.getElementById('fullName').value);
+      const name = capitalizeWords(document.getElementById('name').value);
       const phone = document.getElementById('phone').value;
       const email = document.getElementById('email').value;
       const address = capitalizeWords(document.getElementById('address').value);
-      const about = capitalizeWords(randomAboutMe());
+      const about = document.getElementById('about').value || aboutMeList[Math.floor(Math.random() * aboutMeList.length)];
+      const theme = document.getElementById('theme').value;
 
-      let html = `<h2 style='text-align:center;'>Curriculum Vitae</h2>
-      <p><strong>Full Name:</strong> ${name}</p>
-      <p><strong>Phone:</strong> ${phone}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Home Address:</strong> ${address}</p>
-      <p><strong>About Me:</strong> ${about}</p>
-      <h3>Education</h3>`;
+      if (!name) return alert('Please enter your name.');
 
-      const edus = document.querySelectorAll('#educationFields div');
-      edus.forEach(ed => {
-        const inputs = ed.querySelectorAll('input');
-        html += `<p><strong>${capitalizeWords(inputs[0].value)}</strong>, ${capitalizeWords(inputs[1].value)} (${inputs[2].value})</p>`;
+      let eduHTML = '', expHTML = '', skillHTML = '';
+      document.querySelectorAll('#education-section .field').forEach(div => {
+        const inputs = div.querySelectorAll('input');
+        if (inputs.length === 3) {
+          eduHTML += `<p>${capitalizeWords(inputs[0].value)} — ${capitalizeWords(inputs[1].value)} (${inputs[2].value})</p>`;
+        }
       });
 
-      html += `<h3>Experience</h3>`;
-      const exps = document.querySelectorAll('#experienceFields div');
-      exps.forEach(exp => {
-        const inputs = exp.querySelectorAll('input, textarea');
-        html += `<p><strong>${capitalizeWords(inputs[0].value)}</strong> - ${capitalizeWords(inputs[1].value)}<br>${capitalizeWords(inputs[2].value)}</p>`;
+      document.querySelectorAll('#experience-section .field').forEach(div => {
+        const inputs = div.querySelectorAll('input');
+        const textarea = div.querySelector('textarea');
+        if (inputs.length === 2 && textarea) {
+          expHTML += `<p><strong>${capitalizeWords(inputs[0].value)}</strong> — ${capitalizeWords(inputs[1].value)}<br/>${capitalizeWords(textarea.value)}</p>`;
+        }
       });
 
-      html += `<h3>Skills</h3><ul>`;
-      const skills = document.querySelectorAll('#skillsFields input');
-      skills.forEach(skill => {
-        html += `<li>${capitalizeWords(skill.value)}</li>`;
+      document.querySelectorAll('#skills-section .field').forEach(div => {
+        const input = div.querySelector('input');
+        if (input) {
+          skillHTML += `<li>${capitalizeWords(input.value)}</li>`;
+        }
       });
-      html += `</ul><p style='font-size:12px; text-align:right;'>Created On www.re-el-branding.rf.gd</p>`;
 
-      const preview = document.getElementById('cvPreview');
-      preview.innerHTML = html;
+      const preview = document.getElementById('cv-preview');
+      preview.className = `cv-preview ${theme}`;
+      preview.innerHTML = `
+        <div class="cv-heading">Curriculum Vitae</div>
+        <h2>${name}</h2>
+        <p><strong>Phone:</strong> ${phone}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Address:</strong> ${address}</p>
+        <p><strong>About Me:</strong> ${capitalizeWords(about)}</p>
+        <h3>Education</h3>${eduHTML}
+        <h3>Experience</h3>${expHTML}
+        <h3>Skills</h3><ul>${skillHTML}</ul>
+        <div class="watermark">Created on www.re-el-branding.rf.gd</div>
+      `;
+      preview.classList.remove('hidden');
       document.getElementById('downloadBtn').classList.remove('hidden');
       document.getElementById('shareBtn').classList.remove('hidden');
     }
 
     function downloadCV() {
-      const element = document.getElementById('cvPreview');
-      const name = document.getElementById('fullName').value || 'CV';
-      const opt = {
-        margin:       0.5,
-        filename:     `CV Of ${name}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
-      };
-      html2pdf().from(element).set(opt).save();
+      const element = document.getElementById('cv-preview');
+      const name = capitalizeWords(document.getElementById('name').value);
+      html2pdf().set({
+        filename: `CV Of ${name}.pdf`,
+        jsPDF: { format: 'a4' },
+        html2canvas: { scale: 2 }
+      }).from(element).save();
     }
 
     function shareCV() {
-      alert("Sharing functionality to be implemented.");
+      alert('Use your browser share feature or send the downloaded PDF to share it.');
     }
-
-    window.onload = () => {
-      const select = document.getElementById("aboutMe");
-      aboutMeList.forEach(desc => {
-        const option = document.createElement("option");
-        option.text = capitalizeWords(desc);
-        option.value = desc;
-        select.add(option);
-      });
-    };
   </script>
 </body>
 </html>
-
 
