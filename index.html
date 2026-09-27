@@ -1,451 +1,663 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Re-V CV Maker Tool</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #e0e0e0 30%, #ffffff);
-      backdrop-filter: blur(6px);
-      padding: 2rem;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Re-V CV Maker Tool</title>
 
-h1 {
-  text-align: center;
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
+<!-- Google Fonts used by the decorative preview themes below -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Merriweather&family=Dancing+Script&family=Playfair+Display&family=Roboto+Slab&family=Great+Vibes&family=Libre+Baskerville&family=Cormorant&family=Astloch&family=Galada&family=Yellowtail&family=Sacramento&family=Petit+Formal+Script&family=Aleo&family=Special+Elite&family=Covered+By+Your+Grace&family=Charmonman&family=Caveat&family=Pacifico&family=Satisfy&family=Kaushan+Script&family=Indie+Flower&family=Shadows+Into+Light&family=Gloria+Hallelujah&family=Rock+Salt&family=Josefin+Sans&family=Anton&family=Bebas+Neue&family=Oswald&family=Lora&family=PT+Serif&family=Play&family=Amatic+SC&family=Crimson+Text&family=Vollkorn&family=Bitter&family=Ubuntu&family=Josefin+Slab&family=Spectral&display=swap" rel="stylesheet">
 
-.container {
-  max-width: 800px;
-  margin: auto;
-  background: white;
-  border-radius: 10px;
-  padding: 2rem;
-  box-shadow: 0 0 20px rgba(0,0,0,0.1);
-}
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #e0e0e0 30%, #ffffff);
+    padding: 2rem;
+  }
 
-.theme-selector {
-  margin-bottom: 1rem;
-}
+  h1 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
 
-.field {
-  margin-bottom: 1rem;
-}
+  .container {
+    max-width: 800px;
+    margin: auto;
+    background: white;
+    border-radius: 10px;
+    padding: 2rem;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  }
 
-input, textarea, select, button {
-  width: 100%;
-  padding: 0.6rem;
-  font-size: 1rem;
-  margin-top: 0.3rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
+  .theme-selector { margin-bottom: 1rem; }
+  .field { margin-bottom: 1rem; }
 
-.cv-preview {
-  border: 1px solid #ccc;
-  padding: 1rem;
-  margin-top: 2rem;
-  background: #fff;
-  page-break-after: always;
-  transform: scale(1);
-  transform-origin: top left;
-}
+  label { display: block; font-weight: 600; }
 
-.cv-heading {
-  text-align: center;
-  font-size: 24px;
-  font-weight: bold;
-  margin-bottom: 1rem;
-}
+  input, textarea, select, button {
+    width: 100%;
+    padding: 0.6rem;
+    font-size: 1rem;
+    margin-top: 0.3rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    font-family: inherit;
+  }
 
-.action-buttons {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
+  button { cursor: pointer; }
 
-.hidden {
-  display: none;
-}
+  .hint {
+    font-size: 0.8rem;
+    color: #666;
+    margin: 0.25rem 0 1rem;
+  }
 
-.section {
-  margin-top: 1rem;
-}
+  .cv-preview {
+    border: 1px solid #ccc;
+    padding: 1rem;
+    margin-top: 2rem;
+    background: #fff;
+    page-break-after: always;
+  }
 
-.watermark {
-  text-align: center;
-  font-size: 10px;
-  margin-top: 1rem;
-  color: gray;
-}
+  .cv-heading {
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
 
-/* Original Themes */
-.theme-1 { font-family: 'Georgia'; color: #333; }
-.theme-2 { font-family: 'Verdana'; color: #444; }
-.theme-3 { font-family: 'Courier New'; color: #222; }
-.theme-4 { font-family: 'Tahoma'; color: #111; }
-.theme-5 { font-family: 'Lucida Console'; color: #555; }
-.theme-6 { font-family: 'Palatino Linotype'; color: #666; }
+  .action-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  .action-buttons button { width: auto; flex: 1 1 auto; }
 
-/* 40 New Themes */
-.theme-7  { font-family: 'Cinzel';           color: #B22222; } /* Astrological Aries */
-.theme-8  { font-family: 'Papyrus';         color: #DAA520; } /* Astrological Taurus */
-.theme-9  { font-family: 'Merriweather';    color: #8A2BE2; } /* Astrological Gemini */
-.theme-10 { font-family: 'Dancing Script';  color: #FF69B4; } /* Astrological Cancer */
-.theme-11 { font-family: 'Playfair Display';color: #FF8C00; } /* Astrological Leo */
-.theme-12 { font-family: 'Roboto Slab';     color: #20B2AA; } /* Astrological Virgo */
-.theme-13 { font-family: 'Great Vibes';     color: #6A5ACD; } /* Astrological Libra */
-.theme-14 { font-family: 'Libre Baskerville';color: #FF4500; } /* Astrological Scorpio */
-.theme-15 { font-family: 'Cormorant Upright';color: #2E8B57; } /* Astrological Sagittarius */
-.theme-16 { font-family: 'Astloch';         color: #1E90FF; } /* Astrological Capricorn */
-.theme-17 { font-family: 'Galada';          color: #DA70D6; } /* Astrological Aquarius */
-.theme-18 { font-family: 'Yellowtail';      color: #FFD700; } /* Astrological Pisces */
-.theme-19 { font-family: 'Herbarium';       color: #556B2F; } /* Herbal Mint */
-.theme-20 { font-family: 'Petit Formal';   color: #8B4513; } /* Herbal Sage */
-.theme-21 { font-family: 'Aleo';            color: #2F4F4F; } /* Herbal Rosemary */
-.theme-22 { font-family: 'Amatica SC';      color: #808000; } /* Herbal Thyme */
-.theme-23 { font-family: 'Covered By Your Grace'; color: #006400; } /* Herbal Basil */
-.theme-24 { font-family: 'Charmonman';     color: #228B22; } /* Herbal Lavender */
-.theme-25 { font-family: 'Pineapple';       color: #9ACD32; } /* Herbal Chamomile */
-.theme-26 { font-family: 'Pacifico';        color: #8FBC8F; } /* Colourful Sunset */
-.theme-27 { font-family: 'Satisfy';         color: #FF1493; } /* Colourful Blossom */
-.theme-28 { font-family: 'Kaushan Script';  color: #FF6347; } /* Colourful Coral */
-.theme-29 { font-family: 'Indie Flower';    color: #1E90FF; } /* Colourful Ocean */
-.theme-30 { font-family: 'Shadows Into Light'; color: #00CED1; } /* Colourful Teal */
-.theme-31 { font-family: 'Gloria Hallelujah'; color: #9400D3; } /* Colourful Violet */
-.theme-32 { font-family: 'Rock Salt';       color: #FF7F50; } /* Colourful Peach */
-.theme-33 { font-family: 'Josefin Sans';    color: #DC143C; } /* Bold Crimson */
-.theme-34 { font-family: 'Anton';           color: #000000; } /* Bold Monochrome */
-.theme-35 { font-family: 'Bebas Neue';      color: #FF0000; } /* Bold Scarlet */
-.theme-36 { font-family: 'Oswald';          color: #800000; } /* Bold Maroon */
-.theme-37 { font-family: 'Lora';            color: #00008B; } /* Masculine Navy */
-.theme-38 { font-family: 'PT Serif';        color: #2F4F4F; } /* Masculine Slate */
-.theme-39 { font-family: 'Play';            color: #4B0082; } /* Feminine Indigo */
-.theme-40 { font-family: 'Amatic SC';       color: #FF69B4; } /* Feminine Pink */
-.theme-41 { font-family: 'Crimson Text';    color: #8B0000; } /* Feminine Rose */
-.theme-42 { font-family: 'Vollkorn';        color: #C71585; } /* Feminine Magenta */
-.theme-43 { font-family: 'Bitter';          color: #483D8B; } /* Balanced Grey */
-.theme-44 { font-family: 'Ubuntu';          color: #2E8B57; } /* Balanced Emerald */
-.theme-45 { font-family: 'Josefin Slab';    color: #4682B4; } /* Balanced Steel */
-.theme-46 { font-family: 'Spectral';        color: #A0522D; } /* Balanced Chestnut */
+  .hidden { display: none; }
+  .section { margin-top: 1rem; }
 
-.remove-btn {
-  background: red;
-  color: white;
-  border: none;
-  cursor: pointer;
-  width: auto;
-  padding: 0.3rem 0.6rem;
-}
+  .watermark {
+    text-align: center;
+    font-size: 10px;
+    margin-top: 1rem;
+    color: gray;
+  }
 
-datalist option {
-  font-size: 1rem;
-}
-  </style>
+  /* Original Themes */
+  .theme-1 { font-family: Georgia, 'Times New Roman', serif; color: #333; }
+  .theme-2 { font-family: Verdana, sans-serif; color: #444; }
+  .theme-3 { font-family: 'Courier New', Courier, monospace; color: #222; }
+  .theme-4 { font-family: Tahoma, sans-serif; color: #111; }
+  .theme-5 { font-family: 'Lucida Console', Monaco, monospace; color: #555; }
+  .theme-6 { font-family: 'Palatino Linotype', Palatino, serif; color: #666; }
+
+  /* Decorative preview themes (fallback stacks added so unloaded fonts still degrade sensibly).
+     NOTE: these only affect the on-screen preview. The downloaded PDF always uses a plain,
+     ATS-friendly layout regardless of theme, see generateAtsPdf(). */
+  .theme-7  { font-family: 'Cinzel', serif; color: #B22222; }
+  .theme-8  { font-family: Papyrus, fantasy; color: #DAA520; }
+  .theme-9  { font-family: 'Merriweather', serif; color: #8A2BE2; }
+  .theme-10 { font-family: 'Dancing Script', cursive; color: #FF69B4; }
+  .theme-11 { font-family: 'Playfair Display', serif; color: #FF8C00; }
+  .theme-12 { font-family: 'Roboto Slab', serif; color: #20B2AA; }
+  .theme-13 { font-family: 'Great Vibes', cursive; color: #6A5ACD; }
+  .theme-14 { font-family: 'Libre Baskerville', serif; color: #FF4500; }
+  .theme-15 { font-family: 'Cormorant', serif; color: #2E8B57; }
+  .theme-16 { font-family: 'Astloch', cursive; color: #1E90FF; }
+  .theme-17 { font-family: 'Galada', cursive; color: #DA70D6; }
+  .theme-18 { font-family: 'Yellowtail', cursive; color: #FFD700; }
+  .theme-19 { font-family: 'Sacramento', cursive; color: #556B2F; }
+  .theme-20 { font-family: 'Petit Formal Script', cursive; color: #8B4513; }
+  .theme-21 { font-family: 'Aleo', serif; color: #2F4F4F; }
+  .theme-22 { font-family: 'Special Elite', monospace; color: #808000; }
+  .theme-23 { font-family: 'Covered By Your Grace', cursive; color: #006400; }
+  .theme-24 { font-family: 'Charmonman', cursive; color: #228B22; }
+  .theme-25 { font-family: 'Caveat', cursive; color: #9ACD32; }
+  .theme-26 { font-family: 'Pacifico', cursive; color: #8FBC8F; }
+  .theme-27 { font-family: 'Satisfy', cursive; color: #FF1493; }
+  .theme-28 { font-family: 'Kaushan Script', cursive; color: #FF6347; }
+  .theme-29 { font-family: 'Indie Flower', cursive; color: #1E90FF; }
+  .theme-30 { font-family: 'Shadows Into Light', cursive; color: #00CED1; }
+  .theme-31 { font-family: 'Gloria Hallelujah', cursive; color: #9400D3; }
+  .theme-32 { font-family: 'Rock Salt', cursive; color: #FF7F50; }
+  .theme-33 { font-family: 'Josefin Sans', sans-serif; color: #DC143C; }
+  .theme-34 { font-family: 'Anton', sans-serif; color: #000000; }
+  .theme-35 { font-family: 'Bebas Neue', sans-serif; color: #FF0000; }
+  .theme-36 { font-family: 'Oswald', sans-serif; color: #800000; }
+  .theme-37 { font-family: 'Lora', serif; color: #00008B; }
+  .theme-38 { font-family: 'PT Serif', serif; color: #2F4F4F; }
+  .theme-39 { font-family: 'Play', sans-serif; color: #4B0082; }
+  .theme-40 { font-family: 'Amatic SC', cursive; color: #FF69B4; }
+  .theme-41 { font-family: 'Crimson Text', serif; color: #8B0000; }
+  .theme-42 { font-family: 'Vollkorn', serif; color: #C71585; }
+  .theme-43 { font-family: 'Bitter', serif; color: #483D8B; }
+  .theme-44 { font-family: 'Ubuntu', sans-serif; color: #2E8B57; }
+  .theme-45 { font-family: 'Josefin Slab', serif; color: #4682B4; }
+  .theme-46 { font-family: 'Spectral', serif; color: #A0522D; }
+
+  .remove-btn {
+    background: #c0392b;
+    color: white;
+    border: none;
+    width: auto;
+    padding: 0.3rem 0.6rem;
+    margin-top: 0.5rem;
+  }
+
+  .ats-note {
+    background: #eef6ff;
+    border: 1px solid #bcdcff;
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+    color: #234;
+    margin: 1rem 0;
+  }
+
+  datalist option { font-size: 1rem; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h1>Re-V CV Maker Tool</h1>
-    <div class="theme-selector">
-      <label>Choose Theme:</label>
-      <select id="theme">
-        <option value="theme-1">Classic Elegance</option>
-        <option value="theme-2">Professional Modern</option>
-        <option value="theme-3">Clean Courier</option>
-        <option value="theme-4">Trusted Simplicity</option>
-        <option value="theme-5">Sharp Console</option>
-        <option value="theme-6">Sophisticated Serif</option>
-        <!-- 40 New Options -->
-        <option value="theme-7">Astrological Aries</option>
-        <option value="theme-8">Astrological Taurus</option>
-        <option value="theme-9">Astrological Gemini</option>
-        <option value="theme-10">Astrological Cancer</option>
-        <option value="theme-11">Astrological Leo</option>
-        <option value="theme-12">Astrological Virgo</option>
-        <option value="theme-13">Astrological Libra</option>
-        <option value="theme-14">Astrological Scorpio</option>
-        <option value="theme-15">Astrological Sagittarius</option>
-        <option value="theme-16">Astrological Capricorn</option>
-        <option value="theme-17">Astrological Aquarius</option>
-        <option value="theme-18">Astrological Pisces</option>
-        <option value="theme-19">Herbal Mint</option>
-        <option value="theme-20">Herbal Sage</option>
-        <option value="theme-21">Herbal Rosemary</option>
-        <option value="theme-22">Herbal Thyme</option>
-        <option value="theme-23">Herbal Basil</option>
-        <option value="theme-24">Herbal Lavender</option>
-        <option value="theme-25">Herbal Chamomile</option>
-        <option value="theme-26">Colourful Sunset</option>
-        <option value="theme-27">Colourful Blossom</option>
-        <option value="theme-28">Colourful Coral</option>
-        <option value="theme-29">Colourful Ocean</option>
-        <option value="theme-30">Colourful Teal</option>
-        <option value="theme-31">Colourful Violet</option>
-        <option value="theme-32">Colourful Peach</option>
-        <option value="theme-33">Bold Crimson</option>
-        <option value="theme-34">Bold Monochrome</option>
-        <option value="theme-35">Bold Scarlet</option>
-        <option value="theme-36">Bold Maroon</option>
-        <option value="theme-37">Masculine Navy</option>
-        <option value="theme-38">Masculine Slate</option>
-        <option value="theme-39">Feminine Indigo</option>
-        <option value="theme-40">Feminine Pink</option>
-        <option value="theme-41">Feminine Rose</option>
-        <option value="theme-42">Feminine Magenta</option>
-        <option value="theme-43">Balanced Grey</option>
-        <option value="theme-44">Balanced Emerald</option>
-        <option value="theme-45">Balanced Steel</option>
-        <option value="theme-46">Balanced Chestnut</option>
-      </select>
-    </div>
-    <div class="field"><label>Full Name</label><input id="name" /></div>
-    <div class="field"><label>Phone Number</label><input id="phone" /></div>
-    <div class="field"><label>Email Address</label><input id="email" /></div>
-    <div class="field"><label>Home Address</label><input id="address" /></div>
-    <div class="field"><label>About Me</label><input id="about" list="aboutList" /></div>
-    <datalist id="aboutList"></datalist>
-    <div class="field"><label>About Developer</label><p>View <a href="README.md" target="_blank">README.md</a></p></div>
+<div class="container">
+  <h1>Re-V CV Maker Tool</h1>
 
-    <div id="education-section" class="section">
-      <label>Education</label>
-      <button onclick="addField('education')">Add Education</button>
-    </div>
-    <div id="experience-section" class="section">
-      <label>Experience</label>
-      <button onclick="addField('experience')">Add Experience</button>
-    </div>
-    <div id="skills-section" class="section">
-      <label>Skills</label>
-      <button onclick="addField('skills')">Add Skill</button>
-    </div>
-
-    <div class="action-buttons">
-      <button onclick="generateCV()">Generate CV</button>
-      <button onclick="saveData()">Save</button>
-      <button onclick="loadData()">Load</button>
-      <button id="downloadBtn" class="hidden" onclick="downloadCV()">Download PDF</button>
-      <button id="shareBtn" class="hidden" onclick="shareCV()">Share PDF</button>
-    </div>
-
-    <div id="cv-preview" class="cv-preview hidden"></div>
+  <div class="ats-note">
+    The theme below changes how your CV looks on screen. The downloaded PDF always uses a clean,
+    plain-text layout so it can be read correctly by applicant tracking systems (ATS).
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+  <div class="theme-selector">
+    <label for="theme">Choose Preview Theme</label>
+    <select id="theme">
+      <option value="theme-1">Classic Elegance</option>
+      <option value="theme-2">Professional Modern</option>
+      <option value="theme-3">Clean Courier</option>
+      <option value="theme-4">Trusted Simplicity</option>
+      <option value="theme-5">Sharp Console</option>
+      <option value="theme-6">Sophisticated Serif</option>
+      <option value="theme-7">Astrological Aries</option>
+      <option value="theme-8">Astrological Taurus</option>
+      <option value="theme-9">Astrological Gemini</option>
+      <option value="theme-10">Astrological Cancer</option>
+      <option value="theme-11">Astrological Leo</option>
+      <option value="theme-12">Astrological Virgo</option>
+      <option value="theme-13">Astrological Libra</option>
+      <option value="theme-14">Astrological Scorpio</option>
+      <option value="theme-15">Astrological Sagittarius</option>
+      <option value="theme-16">Astrological Capricorn</option>
+      <option value="theme-17">Astrological Aquarius</option>
+      <option value="theme-18">Astrological Pisces</option>
+      <option value="theme-19">Herbal Mint</option>
+      <option value="theme-20">Herbal Sage</option>
+      <option value="theme-21">Herbal Rosemary</option>
+      <option value="theme-22">Herbal Thyme</option>
+      <option value="theme-23">Herbal Basil</option>
+      <option value="theme-24">Herbal Lavender</option>
+      <option value="theme-25">Herbal Chamomile</option>
+      <option value="theme-26">Colourful Sunset</option>
+      <option value="theme-27">Colourful Blossom</option>
+      <option value="theme-28">Colourful Coral</option>
+      <option value="theme-29">Colourful Ocean</option>
+      <option value="theme-30">Colourful Teal</option>
+      <option value="theme-31">Colourful Violet</option>
+      <option value="theme-32">Colourful Peach</option>
+      <option value="theme-33">Bold Crimson</option>
+      <option value="theme-34">Bold Monochrome</option>
+      <option value="theme-35">Bold Scarlet</option>
+      <option value="theme-36">Bold Maroon</option>
+      <option value="theme-37">Masculine Navy</option>
+      <option value="theme-38">Masculine Slate</option>
+      <option value="theme-39">Feminine Indigo</option>
+      <option value="theme-40">Feminine Pink</option>
+      <option value="theme-41">Feminine Rose</option>
+      <option value="theme-42">Feminine Magenta</option>
+      <option value="theme-43">Balanced Grey</option>
+      <option value="theme-44">Balanced Emerald</option>
+      <option value="theme-45">Balanced Steel</option>
+      <option value="theme-46">Balanced Chestnut</option>
+    </select>
+  </div>
 
-  <script>
-    const aboutMeList = [
-      "A Motivated Professional With A Passion For Excellence.",
-      "Driven By Purpose, Grounded In Precision.",
-      "Creative Thinker With An Eye For Detail.",
-      "Results-Oriented With A Team-First Mentality.",
-      "Always Ready To Learn And Adapt.",
-      "Organized, Efficient, And Dependable.",
-      "Eager To Deliver Solutions That Matter.",
-      "Strategically Minded With Practical Know-How.",
-      "Dedicated To Quality And Innovation.",
-      "Lover Of Challenges And Problem Solving.",
-      "Honest, Reliable, And Goal-Focused.",
-      "Focused On Continuous Improvement.",
-      "Effective Communicator And Listener.",
-      "Analytical And Curious By Nature.",
-      "Enjoys Collaborating And Sharing Ideas.",
-      "Committed To Making A Positive Impact.",
-      "Thrives In Dynamic Work Environments.",
-      "Skilled At Managing Multiple Priorities.",
-      "Positive, Proactive, And Persevering.",
-      "Willing To Go The Extra Mile Every Time.",
-      /* 80 More Lengthier Descriptions */
-      "An Enthusiastic Innovator Who Brings Creative Solutions To Complex Challenges With A Smile.",
-      "A Seasoned Professional Skilled In Adapting To Rapidly Changing Environments While Maintaining Quality And Standards.",
-      "A Thoughtful Strategist Who Excels At Analyzing Data And Turning Insights Into Actionable Plans.",
-      "A Dynamic Leader Dedicated To Cultivating Collaborative Team Cultures That Foster Growth And Success.",
-      "An Articulate Presenter Capable Of Communicating Complex Ideas Clearly And Persuasively To Diverse Audiences.",
-      "A Meticulous Planner Who Balances Creativity With Structure To Deliver Projects On Time And Within Budget.",
-      "A Passionate Advocate For Continuous Learning, Regularly Updating Skills To Stay Ahead Of Industry Trends.",
-      "A Resourceful Problem-Solver Who Thrives Under Pressure And Turns Obstacles Into Opportunities.",
-      "A Customer-Centric Professional Committed To Exceeding Expectations Through Exceptional Service And Support.",
-      "A Results-Driven Specialist With A Demonstrated Track Record Of Achieving And Surpassing Targets.",
-      "An Adaptable Collaborator Who Values Diversity And Leverages Team Strengths To Achieve Shared Goals.",
-      "A Forward-Thinking Visionary Able To Anticipate Market Needs And Innovate Proactively.",
-      "A Resilient Individual Who Embraces Feedback And Uses It As A Catalyst For Improvement.",
-      "A Proficient Multitasker Skilled At Juggling Multiple Projects Without Sacrificing Attention To Detail.",
-      "A Curious Explorer Eager To Dive Into New Technologies And Methodologies To Enhance Performance.",
-      "An Empathetic Listener Who Builds Trust Through Genuine Engagement And Open Communication.",
-      "A Mindful Decision-Maker Who Balances Intuition With Data-Driven Analysis For Optimal Outcomes.",
-      "A Passionate Mentor Committed To Supporting Colleagues Through Coaching And Knowledge Sharing.",
-      "A Holistic Thinker Who Connects The Dots Across Functions To Drive Integrated Solutions.",
-      "A Collaborative Partner Who Knows How To Leverage Cross-Functional Expertise For Maximum Impact.",
-      "An Inspiring Team Builder Who Motivates Others To Strive For Excellence And Innovation.",
-      "A Detail-Oriented Quality Assurance Expert Who Guarantees Products Meet Rigorous Standards.",
-      "A Proactive Contributor Who Brings Initiative And Enthusiasm To Every Assignment.",
-      "A Seasoned Negotiator With The Skill To Secure Beneficial Outcomes In High-Stakes Situations.",
-      "A Resourceful Researcher Who Uncovers Insights That Drive Strategic Decision-Making.",
-      "A Tech-Savvy Enthusiast Who Integrates Emerging Tools To Optimize Workflows And Productivity.",
-      "A Compassionate Leader Focused On Employee Well-Being And Sustainable Team Performance.",
-      "A Visionary Designer Who Blends Aesthetics And Functionality For Engaging User Experiences.",
-      "A Strategic Marketer Who Crafts Compelling Narratives That Resonate With Target Audiences.",
-      "A Skilled Networker Who Establishes And Cultivates Long-Lasting Professional Relationships.",
-      "A Meticulous Data Analyst Who Transforms Raw Numbers Into Clear, Actionable Reports.",
-      "A Persuasive Copywriter Who Captivates Audiences With Clear, Engaging, And Concise Messaging.",
-      "An Innovative Developer Who Writes Clean, Scalable Code To Build Robust Digital Solutions.",
-      "A Diligent Auditor Who Ensures Compliance Through Thorough Reviews And Critical Evaluations.",
-      "A Budding Entrepreneur Who Approaches Every Task With An Owner’s Mindset And Unwavering Commitment.",
-      "A Creative Storyteller Who Engages Readers By Weaving Data And Narratives Into Compelling Proposals.",
-      "A Well-Rounded Specialist With Both Technical Expertise And Strong Interpersonal Skills.",
-      "A Methodical Researcher Who Uses Established Best Practices To Drive Insightful Conclusions.",
-      "A Visionary Planner Who Aligns Initiatives With Long-Term Organizational Objectives.",
-      "A Passionate Educator Who Delivers Training And Workshops To Empower Stakeholders.",
-      "A Dedicated Health And Safety Advocate Who Implements Protocols To Ensure Workplace Security.",
-      "A Prolific Writer Who Crafts Thorough Documentation That Enhances User Understanding.",
-      "An Ethical Professional Who Upholds Integrity And Transparency In Every Undertaking.",
-      "A Proficient Facilitator Who Guides Workshops And Meetings Toward Effective, Consensus-Driven Results.",
-      "A Sustainability Champion Who Drives Green Initiatives And Corporate Responsibility Efforts.",
-      "A Perceptive Psychologist Who Applies Behavioral Insights To Optimize Team Dynamics.",
-      "A Versatile Artist Who Blends Traditional Techniques With Digital Tools For Unique Creations.",
-      "A Dedicated Research Scientist Who Conducts Rigorous Experiments With Precision And Care.",
-      "A Strategic CFO Candidate Skilled In Fiscal Planning, Risk Management, And Regulatory Compliance.",
-      "A Proactive Legal Advisor Who Navigates Complex Regulations To Safeguard Organizational Interests.",
-      "A Forward-Looking Urban Planner Who Designs Sustainable, Community-Centric Development Projects.",
-      "A Compassionate Social Worker Who Advocates For Vulnerable Populations With Empathy And Professionalism.",
-      "A Tactical Operations Manager Who Oversees Logistics And Streamlines Supply Chain Processes.",
-      "A Distinguished Educator Who Shapes Curricula To Inspire And Motivate Learners Of All Ages.",
-      "A Global Relations Expert Who Manages Cross-Cultural Collaborations With Diplomacy And Tact.",
-      "A Dedicated Healthcare Administrator Who Coordinates Patient Services For Optimal Care Delivery.",
-      "A Visionary CEO Candidate Who Aligns Teams Behind A Unified Mission And Growth Strategy.",
-      "A Specialist In AI Integration Who Applies Machine Learning To Enhance Operational Efficiencies.",
-      "A Cybersecurity Enthusiast Who Implements Robust Defenses Against Emerging Threats.",
-      "An Environmental Scientist Who Conducts Fieldwork And Data Analysis To Drive Conservation Efforts.",
-      "An Award-Winning Journalist Who Reports With Integrity, Depth, And Engaging Storytelling.",
-      "A Project Management Professional With PMP Certification And Proven Delivery Records.",
-    ];
+  <div class="field"><label for="name">Full Name</label><input id="name" autocomplete="name" /></div>
+  <div class="field"><label for="phone">Phone Number</label><input id="phone" type="tel" autocomplete="tel" /></div>
+  <div class="field"><label for="email">Email Address</label><input id="email" type="email" autocomplete="email" /></div>
+  <div class="field"><label for="address">Home Address</label><input id="address" autocomplete="street-address" /></div>
+  <div class="field">
+    <label for="about">About Me</label>
+    <input id="about" list="aboutList" />
+    <p class="hint">Start typing for suggestions, or write your own.</p>
+  </div>
+  <datalist id="aboutList"></datalist>
+  <div class="field"><label>About Developer</label><p>View <a href="README.md" target="_blank" rel="noopener">README.md</a></p></div>
 
-    const aboutDatalist = document.getElementById('aboutList');
-    aboutMeList.forEach(text => {
-      const option = document.createElement('option');
-      option.value = text;
-      aboutDatalist.appendChild(option);
+  <div id="education-section" class="section">
+    <label>Education</label>
+    <button type="button" onclick="addField('education')">Add Education</button>
+  </div>
+  <div id="experience-section" class="section">
+    <label>Experience</label>
+    <button type="button" onclick="addField('experience')">Add Experience</button>
+  </div>
+  <div id="skills-section" class="section">
+    <label>Skills</label>
+    <button type="button" onclick="addField('skills')">Add Skill</button>
+  </div>
+
+  <div class="action-buttons">
+    <button type="button" onclick="generateCV()">Generate CV</button>
+    <button type="button" onclick="saveData()">Save</button>
+    <button type="button" onclick="loadData()">Load</button>
+    <button type="button" id="downloadBtn" class="hidden" onclick="downloadCV()">Download PDF (ATS-friendly)</button>
+    <button type="button" id="shareBtn" class="hidden" onclick="shareCV()">Share PDF</button>
+  </div>
+
+  <div id="cv-preview" class="cv-preview hidden"></div>
+</div>
+
+<!-- jsPDF only — used to build a real, selectable-text PDF (no html2canvas screenshotting,
+     which would turn the CV into a non-parseable image and break ATS scanning). -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.1.1/jspdf.umd.min.js"
+        integrity="sha512-/Am09zlYshHgRizY3RkConGj4BsYIdb8mS7r5XAXw0rTiLgGSHzpUHTQBhinWR32C/KzLr749J1xuORzT2JnRA=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+
+<script>
+  'use strict';
+
+  const STORAGE_KEY = 'rev_cv_data_v2';
+
+  const aboutMeList = [
+    "A Motivated Professional With A Passion For Excellence.",
+    "Driven By Purpose, Grounded In Precision.",
+    "Creative Thinker With An Eye For Detail.",
+    "Results-Oriented With A Team-First Mentality.",
+    "Always Ready To Learn And Adapt.",
+    "Organized, Efficient, And Dependable.",
+    "Eager To Deliver Solutions That Matter.",
+    "Strategically Minded With Practical Know-How.",
+    "Dedicated To Quality And Innovation.",
+    "Lover Of Challenges And Problem Solving.",
+    "Honest, Reliable, And Goal-Focused.",
+    "Focused On Continuous Improvement.",
+    "Effective Communicator And Listener.",
+    "Analytical And Curious By Nature.",
+    "Enjoys Collaborating And Sharing Ideas.",
+    "Committed To Making A Positive Impact.",
+    "Thrives In Dynamic Work Environments.",
+    "Skilled At Managing Multiple Priorities.",
+    "Positive, Proactive, And Persevering.",
+    "Willing To Go The Extra Mile Every Time.",
+    "An Enthusiastic Innovator Who Brings Creative Solutions To Complex Challenges With A Smile.",
+    "A Seasoned Professional Skilled In Adapting To Rapidly Changing Environments While Maintaining Quality And Standards.",
+    "A Thoughtful Strategist Who Excels At Analyzing Data And Turning Insights Into Actionable Plans.",
+    "A Dynamic Leader Dedicated To Cultivating Collaborative Team Cultures That Foster Growth And Success.",
+    "An Articulate Presenter Capable Of Communicating Complex Ideas Clearly And Persuasively To Diverse Audiences.",
+    "A Meticulous Planner Who Balances Creativity With Structure To Deliver Projects On Time And Within Budget.",
+    "A Passionate Advocate For Continuous Learning, Regularly Updating Skills To Stay Ahead Of Industry Trends.",
+    "A Resourceful Problem-Solver Who Thrives Under Pressure And Turns Obstacles Into Opportunities.",
+    "A Customer-Centric Professional Committed To Exceeding Expectations Through Exceptional Service And Support.",
+    "A Results-Driven Specialist With A Demonstrated Track Record Of Achieving And Surpassing Targets.",
+    "An Adaptable Collaborator Who Values Diversity And Leverages Team Strengths To Achieve Shared Goals.",
+    "A Forward-Thinking Visionary Able To Anticipate Market Needs And Innovate Proactively.",
+    "A Resilient Individual Who Embraces Feedback And Uses It As A Catalyst For Improvement.",
+    "A Proficient Multitasker Skilled At Juggling Multiple Projects Without Sacrificing Attention To Detail.",
+    "A Curious Explorer Eager To Dive Into New Technologies And Methodologies To Enhance Performance.",
+    "An Empathetic Listener Who Builds Trust Through Genuine Engagement And Open Communication.",
+    "A Mindful Decision-Maker Who Balances Intuition With Data-Driven Analysis For Optimal Outcomes.",
+    "A Passionate Mentor Committed To Supporting Colleagues Through Coaching And Knowledge Sharing.",
+    "A Holistic Thinker Who Connects The Dots Across Functions To Drive Integrated Solutions.",
+    "A Collaborative Partner Who Knows How To Leverage Cross-Functional Expertise For Maximum Impact.",
+    "An Inspiring Team Builder Who Motivates Others To Strive For Excellence And Innovation.",
+    "A Detail-Oriented Quality Assurance Expert Who Guarantees Products Meet Rigorous Standards.",
+    "A Proactive Contributor Who Brings Initiative And Enthusiasm To Every Assignment.",
+    "A Seasoned Negotiator With The Skill To Secure Beneficial Outcomes In High-Stakes Situations.",
+    "A Resourceful Researcher Who Uncovers Insights That Drive Strategic Decision-Making.",
+    "A Tech-Savvy Enthusiast Who Integrates Emerging Tools To Optimize Workflows And Productivity.",
+    "A Compassionate Leader Focused On Employee Well-Being And Sustainable Team Performance.",
+    "A Visionary Designer Who Blends Aesthetics And Functionality For Engaging User Experiences.",
+    "A Strategic Marketer Who Crafts Compelling Narratives That Resonate With Target Audiences.",
+    "A Skilled Networker Who Establishes And Cultivates Long-Lasting Professional Relationships.",
+    "A Meticulous Data Analyst Who Transforms Raw Numbers Into Clear, Actionable Reports.",
+    "A Persuasive Copywriter Who Captivates Audiences With Clear, Engaging, And Concise Messaging.",
+    "An Innovative Developer Who Writes Clean, Scalable Code To Build Robust Digital Solutions.",
+    "A Diligent Auditor Who Ensures Compliance Through Thorough Reviews And Critical Evaluations.",
+    "A Budding Entrepreneur Who Approaches Every Task With An Owner's Mindset And Unwavering Commitment.",
+    "A Creative Storyteller Who Engages Readers By Weaving Data And Narratives Into Compelling Proposals.",
+    "A Well-Rounded Specialist With Both Technical Expertise And Strong Interpersonal Skills.",
+    "A Methodical Researcher Who Uses Established Best Practices To Drive Insightful Conclusions.",
+    "A Visionary Planner Who Aligns Initiatives With Long-Term Organizational Objectives.",
+    "A Passionate Educator Who Delivers Training And Workshops To Empower Stakeholders.",
+    "A Dedicated Health And Safety Advocate Who Implements Protocols To Ensure Workplace Security.",
+    "A Prolific Writer Who Crafts Thorough Documentation That Enhances User Understanding.",
+    "An Ethical Professional Who Upholds Integrity And Transparency In Every Undertaking.",
+    "A Proficient Facilitator Who Guides Workshops And Meetings Toward Effective, Consensus-Driven Results.",
+    "A Sustainability Champion Who Drives Green Initiatives And Corporate Responsibility Efforts.",
+    "A Perceptive Psychologist Who Applies Behavioral Insights To Optimize Team Dynamics.",
+    "A Versatile Artist Who Blends Traditional Techniques With Digital Tools For Unique Creations.",
+    "A Dedicated Research Scientist Who Conducts Rigorous Experiments With Precision And Care.",
+    "A Strategic CFO Candidate Skilled In Fiscal Planning, Risk Management, And Regulatory Compliance.",
+    "A Proactive Legal Advisor Who Navigates Complex Regulations To Safeguard Organizational Interests.",
+    "A Forward-Looking Urban Planner Who Designs Sustainable, Community-Centric Development Projects.",
+    "A Compassionate Social Worker Who Advocates For Vulnerable Populations With Empathy And Professionalism.",
+    "A Tactical Operations Manager Who Oversees Logistics And Streamlines Supply Chain Processes.",
+    "A Distinguished Educator Who Shapes Curricula To Inspire And Motivate Learners Of All Ages.",
+    "A Global Relations Expert Who Manages Cross-Cultural Collaborations With Diplomacy And Tact.",
+    "A Dedicated Healthcare Administrator Who Coordinates Patient Services For Optimal Care Delivery.",
+    "A Visionary CEO Candidate Who Aligns Teams Behind A Unified Mission And Growth Strategy.",
+    "A Specialist In AI Integration Who Applies Machine Learning To Enhance Operational Efficiencies.",
+    "A Cybersecurity Enthusiast Who Implements Robust Defenses Against Emerging Threats.",
+    "An Environmental Scientist Who Conducts Fieldwork And Data Analysis To Drive Conservation Efforts.",
+    "An Award-Winning Journalist Who Reports With Integrity, Depth, And Engaging Storytelling.",
+    "A Project Management Professional With PMP Certification And Proven Delivery Records."
+  ];
+
+  const aboutDatalist = document.getElementById('aboutList');
+  aboutMeList.forEach(text => {
+    const option = document.createElement('option');
+    option.value = text;
+    aboutDatalist.appendChild(option);
+  });
+
+  // ---------- helpers ----------
+
+  function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, c => ({
+      '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    }[c]));
+  }
+
+  function capitalizeWords(str) {
+    return String(str ?? '').replace(/\b\w/g, c => c.toUpperCase());
+  }
+
+  // ---------- repeatable field rows ----------
+
+  const FIELD_CONFIG = {
+    education: [
+      { key: 'institution', placeholder: 'Institution Name', tag: 'input' },
+      { key: 'qualification', placeholder: 'Qualification', tag: 'input' },
+      { key: 'year', placeholder: 'Year Completed', tag: 'input' }
+    ],
+    experience: [
+      { key: 'company', placeholder: 'Company Name', tag: 'input' },
+      { key: 'position', placeholder: 'Position', tag: 'input' },
+      { key: 'duties', placeholder: 'Duties', tag: 'textarea' },
+      { key: 'reference', placeholder: 'Reference Contact', tag: 'input' }
+    ],
+    skills: [
+      { key: 'skill', placeholder: 'Skill', tag: 'input' }
+    ]
+  };
+
+  function addField(type, values) {
+    const section = document.getElementById(`${type}-section`);
+    const div = document.createElement('div');
+    div.className = 'field';
+    div.dataset.rowType = type;
+
+    FIELD_CONFIG[type].forEach(f => {
+      const el = document.createElement(f.tag);
+      el.setAttribute('placeholder', f.placeholder);
+      el.setAttribute('aria-label', f.placeholder);
+      el.dataset.field = f.key;
+      if (values && values[f.key] !== undefined) el.value = values[f.key];
+      div.appendChild(el);
     });
 
-    function capitalizeWords(str) {
-      return str.replace(/\b\w/g, c => c.toUpperCase());
-    }
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.className = 'remove-btn';
+    removeBtn.textContent = 'Remove';
+    removeBtn.setAttribute('aria-label', `Remove this ${type} entry`);
+    removeBtn.onclick = () => div.remove();
+    div.appendChild(removeBtn);
 
-    function addField(type) {
+    section.appendChild(div);
+    return div;
+  }
+
+  function readRows(type) {
+    const rows = [];
+    document.querySelectorAll(`#${type}-section .field`).forEach(div => {
+      const row = {};
+      FIELD_CONFIG[type].forEach(f => {
+        const el = div.querySelector(`[data-field="${f.key}"]`);
+        row[f.key] = el ? el.value.trim() : '';
+      });
+      const hasContent = Object.values(row).some(v => v !== '');
+      if (hasContent) rows.push(row);
+    });
+    return rows;
+  }
+
+  // ---------- data model (single source of truth for save/load/generate) ----------
+
+  function collectFormData() {
+    return {
+      name: document.getElementById('name').value.trim(),
+      phone: document.getElementById('phone').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      address: document.getElementById('address').value.trim(),
+      about: document.getElementById('about').value.trim(),
+      theme: document.getElementById('theme').value,
+      education: readRows('education'),
+      experience: readRows('experience'),
+      skills: readRows('skills').map(r => r.skill)
+    };
+  }
+
+  function renderFormData(data) {
+    document.getElementById('name').value = data.name || '';
+    document.getElementById('phone').value = data.phone || '';
+    document.getElementById('email').value = data.email || '';
+    document.getElementById('address').value = data.address || '';
+    document.getElementById('about').value = data.about || '';
+    document.getElementById('theme').value = data.theme || 'theme-1';
+
+    ['education', 'experience', 'skills'].forEach(type => {
       const section = document.getElementById(`${type}-section`);
-      const div = document.createElement('div');
-      div.className = 'field';
+      section.querySelectorAll('.field').forEach(el => el.remove());
+    });
 
-      if (type === 'education') {
-        div.innerHTML = `
-          <input placeholder="Institution Name" />
-          <input placeholder="Qualification" />
-          <input placeholder="Year Completed" />
-          <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
-        `;
-      } else if (type === 'experience') {
-        div.innerHTML = `
-          <input placeholder="Company Name" />
-          <input placeholder="Position" />
-          <textarea placeholder="Duties"></textarea>
-          <input placeholder="Reference Contact" />
-          <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
-        `;
-      } else if (type === 'skills') {
-        div.innerHTML = `
-          <input placeholder="Skill" />
-          <button class="remove-btn" onclick="this.parentElement.remove()">X</button>
-        `;
+    (data.education || []).forEach(row => addField('education', row));
+    (data.experience || []).forEach(row => addField('experience', row));
+    (data.skills || []).forEach(skill => addField('skills', { skill }));
+  }
+
+  // ---------- on-screen preview (theme-styled, HTML-escaped) ----------
+
+  function generateCV() {
+    const data = collectFormData();
+    if (!data.name) return alert('Please enter your name.');
+
+    const name = capitalizeWords(data.name);
+    const address = capitalizeWords(data.address);
+    const about = capitalizeWords(data.about) || capitalizeWords(aboutMeList[Math.floor(Math.random() * aboutMeList.length)]);
+
+    let eduHTML = '';
+    data.education.forEach(row => {
+      eduHTML += `<p>${escapeHtml(capitalizeWords(row.institution))} — ${escapeHtml(capitalizeWords(row.qualification))} (${escapeHtml(row.year)})</p>`;
+    });
+
+    let expHTML = '';
+    data.experience.forEach(row => {
+      expHTML += `<p><strong>${escapeHtml(capitalizeWords(row.company))}</strong> — ${escapeHtml(capitalizeWords(row.position))}<br/>${escapeHtml(capitalizeWords(row.duties)).replace(/\n/g, '<br/>')}<br/><em>Reference:</em> ${escapeHtml(row.reference)}</p>`;
+    });
+
+    let skillHTML = '';
+    data.skills.forEach(skill => {
+      skillHTML += `<li>${escapeHtml(capitalizeWords(skill))}</li>`;
+    });
+
+    const preview = document.getElementById('cv-preview');
+    preview.className = `cv-preview ${data.theme}`;
+    preview.innerHTML = `
+      <div class="cv-heading">Curriculum Vitae</div>
+      <h2>${escapeHtml(name)}</h2>
+      <p><strong>Phone:</strong> ${escapeHtml(data.phone)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(data.email)}</p>
+      <p><strong>Address:</strong> ${escapeHtml(address)}</p>
+      <p><strong>About Me:</strong> ${escapeHtml(about)}</p>
+      <h3>Education</h3>${eduHTML}
+      <h3>Experience</h3>${expHTML}
+      <h3>Skills</h3><ul>${skillHTML}</ul>
+      <div class="watermark">Created on www.re-el-branding.rf.gd</div>
+    `;
+    preview.classList.remove('hidden');
+    document.getElementById('downloadBtn').classList.remove('hidden');
+    document.getElementById('shareBtn').classList.remove('hidden');
+  }
+
+  // ---------- ATS-friendly PDF (real selectable text, single column, standard font) ----------
+
+  function generateAtsPdf(data) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+
+    const marginX = 48;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const maxWidth = pageWidth - marginX * 2;
+    let y = 56;
+
+    function ensureSpace(lineHeight) {
+      if (y + lineHeight > pageHeight - 48) {
+        doc.addPage();
+        y = 56;
       }
-
-      section.appendChild(div);
     }
 
-    function generateCV() {
-      const name = capitalizeWords(document.getElementById('name').value);
-      const phone = document.getElementById('phone').value;
-      const email = document.getElementById('email').value;
-      const address = capitalizeWords(document.getElementById('address').value);
-      const about = document.getElementById('about').value || aboutMeList[Math.floor(Math.random() * aboutMeList.length)];
-      const theme = document.getElementById('theme').value;
+    function writeLine(text, { size = 11, style = 'normal', gapAfter = 14 } = {}) {
+      doc.setFont('helvetica', style);
+      doc.setFontSize(size);
+      const lines = doc.splitTextToSize(text, maxWidth);
+      lines.forEach(line => {
+        ensureSpace(size + 4);
+        doc.text(line, marginX, y);
+        y += size + 4;
+      });
+      y += gapAfter - (size + 4);
+      if (y < 0) y = 0;
+    }
 
-      if (!name) return alert('Please enter your name.');
+    function sectionHeading(text) {
+      y += 6;
+      ensureSpace(20);
+      doc.setDrawColor(180);
+      doc.setLineWidth(0.5);
+      doc.line(marginX, y, pageWidth - marginX, y);
+      y += 14;
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.text(text.toUpperCase(), marginX, y);
+      y += 14;
+    }
 
-      let eduHTML = '', expHTML = '', skillHTML = '';
-      document.querySelectorAll('#education-section .field').forEach(div => {
-        const inputs = div.querySelectorAll('input');
-        if (inputs.length === 3) {
-          eduHTML += `<p>${capitalizeWords(inputs[0].value)} — ${capitalizeWords(inputs[1].value)} (${inputs[2].value})</p>`;
+    // Name (largest text on the page — helps ATS and humans find it first)
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(20);
+    doc.text(capitalizeWords(data.name) || 'Full Name', marginX, y);
+    y += 24;
+
+    // Contact line — plain text, pipe-separated (no icons/tables, which some ATS can't parse)
+    const contactParts = [data.phone, data.email, data.address].filter(Boolean);
+    if (contactParts.length) {
+      writeLine(contactParts.join('  |  '), { size: 10, gapAfter: 18 });
+    }
+
+    if (data.about) {
+      sectionHeading('Professional Summary');
+      writeLine(capitalizeWords(data.about), { size: 10.5, gapAfter: 8 });
+    }
+
+    if (data.experience.length) {
+      sectionHeading('Experience');
+      data.experience.forEach(row => {
+        writeLine(`${capitalizeWords(row.company)} — ${capitalizeWords(row.position)}`, { size: 11, style: 'bold', gapAfter: 4 });
+        if (row.duties) {
+          row.duties.split('\n').filter(Boolean).forEach(line => {
+            writeLine(`- ${capitalizeWords(line.trim())}`, { size: 10.5, gapAfter: 2 });
+          });
+        }
+        if (row.reference) {
+          writeLine(`Reference: ${row.reference}`, { size: 9.5, gapAfter: 12 });
+        } else {
+          y += 8;
         }
       });
+    }
 
-      document.querySelectorAll('#experience-section .field').forEach(div => {
-        const inputs = div.querySelectorAll('input');
-        const textarea = div.querySelector('textarea');
-        if (inputs.length >= 3 && textarea) {
-          expHTML += `<p><strong>${capitalizeWords(inputs[0].value)}</strong> — ${capitalizeWords(inputs[1].value)}<br/>${capitalizeWords(textarea.value)}<br/><em>Reference:</em> ${inputs[2].value}</p>`;
-        }
+    if (data.education.length) {
+      sectionHeading('Education');
+      data.education.forEach(row => {
+        writeLine(`${capitalizeWords(row.institution)} — ${capitalizeWords(row.qualification)} (${row.year})`, { size: 10.5, gapAfter: 8 });
       });
-
-      document.querySelectorAll('#skills-section .field').forEach(div => {
-        const input = div.querySelector('input');
-        if (input) {
-          skillHTML += `<li>${capitalizeWords(input.value)}</li>`;
-        }
-      });
-
-      const preview = document.getElementById('cv-preview');
-      preview.className = `cv-preview ${theme}`;
-      preview.innerHTML = `
-        <div class="cv-heading">Curriculum Vitae</div>
-        <h2>${name}</h2>
-        <p><strong>Phone:</strong> ${phone}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Address:</strong> ${address}</p>
-        <p><strong>About Me:</strong> ${capitalizeWords(about)}</p>
-        <h3>Education</h3>${eduHTML}
-        <h3>Experience</h3>${expHTML}
-        <h3>Skills</h3><ul>${skillHTML}</ul>
-        <div class="watermark">Created on www.re-el-branding.rf.gd</div>
-      `;
-      preview.classList.remove('hidden');
-      document.getElementById('downloadBtn').classList.remove('hidden');
-      document.getElementById('shareBtn').classList.remove('hidden');
     }
 
-    function downloadCV() {
-      const element = document.getElementById('cv-preview');
-      const name = capitalizeWords(document.getElementById('name').value);
-      html2pdf().set({
-        filename: `CV Of ${name}.pdf`,
-        jsPDF: { format: 'a4' },
-        html2canvas: { scale: 2 }
-      }).from(element).save();
+    if (data.skills.length) {
+      sectionHeading('Skills');
+      writeLine(data.skills.map(capitalizeWords).join(', '), { size: 10.5, gapAfter: 8 });
     }
 
-    function shareCV() {
-      alert('Use your browser share feature or send the downloaded PDF to share it.');
-    }
+    // Plain text footer — safe for ATS since it's real text, not a graphic watermark
+    ensureSpace(20);
+    doc.setFont('helvetica', 'italic');
+    doc.setFontSize(8);
+    doc.setTextColor(140);
+    doc.text('Created on www.re-el-branding.rf.gd', marginX, pageHeight - 30);
 
-    function saveData() {
-      const formData = document.querySelector('.container').innerHTML;
-      localStorage.setItem('rev_cv_data', formData);
+    return doc;
+  }
+
+  function downloadCV() {
+    const data = collectFormData();
+    if (!data.name) return alert('Please enter your name.');
+    const doc = generateAtsPdf(data);
+    const safeName = (capitalizeWords(data.name) || 'CV').replace(/[^\w\- ]/g, '').trim().replace(/\s+/g, '_');
+    doc.save(`${safeName}_CV.pdf`);
+  }
+
+  function shareCV() {
+    alert('Use your browser share feature or send the downloaded PDF to share it.');
+  }
+
+  // ---------- structured save/load (JSON, not raw HTML) ----------
+
+  function saveData() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collectFormData()));
       alert('Your data has been saved locally.');
+    } catch (err) {
+      console.error(err);
+      alert('Could not save your data (your browser may be blocking local storage).');
     }
+  }
 
-    function loadData() {
-      const data = localStorage.getItem('rev_cv_data');
-      if (data) {
-        document.querySelector('.container').innerHTML = data;
-        alert('Your saved data has been loaded.');
-      } else {
-        alert('No saved data found.');
-      }
+  function loadData() {
+    let raw;
+    try {
+      raw = localStorage.getItem(STORAGE_KEY);
+    } catch (err) {
+      console.error(err);
+      alert('Could not access local storage.');
+      return;
     }
-  </script>
+    if (!raw) return alert('No saved data found.');
+    try {
+      renderFormData(JSON.parse(raw));
+      alert('Your saved data has been loaded.');
+    } catch (err) {
+      console.error(err);
+      alert('Saved data was corrupted and could not be loaded.');
+    }
+  }
+</script>
 </body>
 </html>
