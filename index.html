@@ -32,12 +32,6 @@
 -->
 
 <script>
-  /*
-   * Global PDF-library state.
-   *
-   * The application checks this before allowing PDF generation.
-   * jsPDF is loaded below from jsDelivr with an automatic fallback.
-   */
   window.__revPdfReady = false;
   window.__revPdfLoadFailed = false;
 
@@ -415,8 +409,6 @@
     }
   }
 
-  /* Theme swatch grid */
-
   .theme-grid {
     display: grid;
     grid-template-columns:
@@ -452,8 +444,6 @@
     box-shadow:
       0 0 0 2px rgba(79, 70, 229, 0.2);
   }
-
-  /* Repeatable rows */
 
   .row-list {
     display: flex;
@@ -520,8 +510,6 @@
     opacity: 0.6;
     margin-bottom: var(--space-2);
   }
-
-  /* Live CV preview */
 
   .cv-preview {
     border: 1px solid var(--border);
@@ -640,8 +628,6 @@
     color: #16a34a;
   }
 
-  /* Row entry/exit animation */
-
   .row-enter {
     animation: rowIn 180ms ease-out;
   }
@@ -657,8 +643,6 @@
       transform: translateY(0);
     }
   }
-
-  /* Toasts */
 
   .toast-stack {
     position: fixed;
@@ -955,11 +939,14 @@
     <h1>Re-V CV Maker Tool</h1>
 
     <div class="progress-wrap">
+
       <div class="progress-track">
+
         <div
           class="progress-fill"
           :style="`width: ${progress}%`"
         ></div>
+
       </div>
 
       <div
@@ -970,6 +957,7 @@
             : `${progress}% of sections filled in`
         "
       ></div>
+
     </div>
 
     <div class="toolbar">
@@ -978,6 +966,7 @@
         type="button"
         @click="loadSample()"
       >
+
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -997,12 +986,14 @@
         </svg>
 
         Try sample data
+
       </button>
 
       <button
         type="button"
         @click="saveData()"
       >
+
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -1017,12 +1008,14 @@
         </svg>
 
         Save
+
       </button>
 
       <button
         type="button"
         @click="loadData(false)"
       >
+
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -1037,6 +1030,7 @@
         </svg>
 
         Load
+
       </button>
 
       <button
@@ -1045,6 +1039,7 @@
         @click="clearAll()"
         title="Clear all fields"
       >
+
         <svg
           viewBox="0 0 24 24"
           fill="none"
@@ -1061,9 +1056,11 @@
         </svg>
 
         Clear
+
       </button>
 
     </div>
+
   </header>
 
   <div class="app-grid">
@@ -1073,8 +1070,6 @@
          ========================================================= -->
 
     <section class="panel">
-
-      <!-- PERSONAL DETAILS -->
 
       <fieldset>
 
@@ -1697,7 +1692,7 @@
         </svg>
 
         <span>
-          This preview shows your chosen theme. The downloaded PDF always uses a clean, plain-text layout so applicant tracking systems (ATS) can read it correctly.
+          The downloaded PDF follows your selected theme's colour and visual style while keeping the CV text selectable and ATS-readable.
         </span>
 
       </div>
@@ -1812,8 +1807,6 @@
           <span x-text="titleCase(about)"></span>
         </p>
 
-        <!-- EDUCATION PREVIEW -->
-
         <template x-if="education.length">
 
           <div>
@@ -1856,8 +1849,6 @@
           </div>
 
         </template>
-
-        <!-- EXPERIENCE PREVIEW -->
 
         <template x-if="experience.length">
 
@@ -1918,8 +1909,6 @@
           </div>
 
         </template>
-
-        <!-- SKILLS PREVIEW -->
 
         <template x-if="skills.length">
 
@@ -2374,6 +2363,350 @@ const THEMES = [
 ];
 
 /* ================================================================
+   PDF THEME CONFIGURATION
+   ================================================================
+
+   jsPDF's standard fonts are used deliberately so the PDF remains
+   lightweight, selectable, searchable and ATS-readable.
+
+   Browser preview fonts are mapped to the closest PDF-safe family.
+
+   Standard jsPDF font families:
+     - helvetica
+     - times
+     - courier
+
+   This means decorative browser fonts are represented through their
+   colour, weight, spacing and closest available font family rather
+   than embedding a raster image or converting the CV to an image.
+   ================================================================ */
+
+const PDF_THEME_CONFIG = {
+
+  'theme-1': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#333333',
+    style: 'classic'
+  },
+
+  'theme-2': {
+    font: 'helvetica',
+    headingFont: 'helvetica',
+    accent: '#444444',
+    style: 'modern'
+  },
+
+  'theme-3': {
+    font: 'courier',
+    headingFont: 'courier',
+    accent: '#222222',
+    style: 'mono'
+  },
+
+  'theme-4': {
+    font: 'helvetica',
+    headingFont: 'helvetica',
+    accent: '#111111',
+    style: 'modern'
+  },
+
+  'theme-5': {
+    font: 'courier',
+    headingFont: 'courier',
+    accent: '#555555',
+    style: 'mono'
+  },
+
+  'theme-6': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#666666',
+    style: 'classic'
+  },
+
+  'theme-7': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#B22222',
+    style: 'classic'
+  },
+
+  'theme-8': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#DAA520',
+    style: 'ornamental'
+  },
+
+  'theme-9': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#8A2BE2',
+    style: 'classic'
+  },
+
+  'theme-10': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#FF69B4',
+    style: 'ornamental'
+  },
+
+  'theme-11': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#FF8C00',
+    style: 'classic'
+  },
+
+  'theme-12': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#20B2AA',
+    style: 'classic'
+  },
+
+  'theme-13': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#6A5ACD',
+    style: 'ornamental'
+  },
+
+  'theme-14': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#FF4500',
+    style: 'classic'
+  },
+
+  'theme-15': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#2E8B57',
+    style: 'classic'
+  },
+
+  'theme-16': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#1E90FF',
+    style: 'ornamental'
+  },
+
+  'theme-17': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#DA70D6',
+    style: 'ornamental'
+  },
+
+  'theme-18': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#B8860B',
+    style: 'ornamental'
+  },
+
+  'theme-19': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#556B2F',
+    style: 'ornamental'
+  },
+
+  'theme-20': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#8B4513',
+    style: 'ornamental'
+  },
+
+  'theme-21': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#2F4F4F',
+    style: 'classic'
+  },
+
+  'theme-22': {
+    font: 'courier',
+    headingFont: 'courier',
+    accent: '#808000',
+    style: 'mono'
+  },
+
+  'theme-23': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#006400',
+    style: 'ornamental'
+  },
+
+  'theme-24': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#228B22',
+    style: 'ornamental'
+  },
+
+  'theme-25': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#9ACD32',
+    style: 'ornamental'
+  },
+
+  'theme-26': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#8FBC8F',
+    style: 'ornamental'
+  },
+
+  'theme-27': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#FF1493',
+    style: 'ornamental'
+  },
+
+  'theme-28': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#FF6347',
+    style: 'ornamental'
+  },
+
+  'theme-29': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#1E90FF',
+    style: 'ornamental'
+  },
+
+  'theme-30': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#00CED1',
+    style: 'ornamental'
+  },
+
+  'theme-31': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#9400D3',
+    style: 'ornamental'
+  },
+
+  'theme-32': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#FF7F50',
+    style: 'ornamental'
+  },
+
+  'theme-33': {
+    font: 'helvetica',
+    headingFont: 'helvetica',
+    accent: '#DC143C',
+    style: 'bold'
+  },
+
+  'theme-34': {
+    font: 'helvetica',
+    headingFont: 'helvetica',
+    accent: '#000000',
+    style: 'bold'
+  },
+
+  'theme-35': {
+    font: 'helvetica',
+    headingFont: 'helvetica',
+    accent: '#FF0000',
+    style: 'bold'
+  },
+
+  'theme-36': {
+    font: 'helvetica',
+    headingFont: 'helvetica',
+    accent: '#800000',
+    style: 'bold'
+  },
+
+  'theme-37': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#00008B',
+    style: 'classic'
+  },
+
+  'theme-38': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#2F4F4F',
+    style: 'classic'
+  },
+
+  'theme-39': {
+    font: 'helvetica',
+    headingFont: 'helvetica',
+    accent: '#4B0082',
+    style: 'modern'
+  },
+
+  'theme-40': {
+    font: 'helvetica',
+    headingFont: 'helvetica',
+    accent: '#FF69B4',
+    style: 'ornamental'
+  },
+
+  'theme-41': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#8B0000',
+    style: 'classic'
+  },
+
+  'theme-42': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#C71585',
+    style: 'classic'
+  },
+
+  'theme-43': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#483D8B',
+    style: 'classic'
+  },
+
+  'theme-44': {
+    font: 'helvetica',
+    headingFont: 'helvetica',
+    accent: '#2E8B57',
+    style: 'modern'
+  },
+
+  'theme-45': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#4682B4',
+    style: 'classic'
+  },
+
+  'theme-46': {
+    font: 'times',
+    headingFont: 'times',
+    accent: '#A0522D',
+    style: 'classic'
+  }
+};
+
+/* ================================================================
    ABOUT ME SUGGESTIONS
    ================================================================ */
 
@@ -2585,25 +2918,12 @@ function normalizeExperience(item) {
 }
 
 function normalizeSkill(item) {
-  /*
-   * New storage format:
-   *
-   * {
-   *   _id: "...",
-   *   value: "JavaScript"
-   * }
-   *
-   * Old storage format:
-   *
-   * "JavaScript"
-   *
-   * Both are supported.
-   */
 
   if (
     item &&
     typeof item === 'object'
   ) {
+
     return {
       _id:
         typeof item._id === 'string' &&
@@ -2620,7 +2940,8 @@ function normalizeSkill(item) {
   }
 
   return {
-    _id: createId('skill'),
+    _id:
+      createId('skill'),
 
     value:
       cleanString(
@@ -2631,6 +2952,7 @@ function normalizeSkill(item) {
 }
 
 function normalizeData(input) {
+
   const source =
     input &&
     typeof input === 'object'
@@ -2667,7 +2989,9 @@ function normalizeData(input) {
       : 'theme-1';
 
   return {
-    theme: validTheme,
+
+    theme:
+      validTheme,
 
     name:
       cleanString(
@@ -2712,10 +3036,12 @@ function normalizeData(input) {
    ================================================================ */
 
 function cleanExportData(data) {
+
   const normalized =
     normalizeData(data);
 
   return {
+
     theme:
       normalized.theme,
 
@@ -2737,6 +3063,7 @@ function cleanExportData(data) {
     education:
       normalized.education.map(
         row => ({
+
           institution:
             row.institution,
 
@@ -2745,12 +3072,14 @@ function cleanExportData(data) {
 
           year:
             row.year
+
         })
       ),
 
     experience:
       normalized.experience.map(
         row => ({
+
           company:
             row.company,
 
@@ -2762,6 +3091,7 @@ function cleanExportData(data) {
 
           reference:
             row.reference
+
         })
       ),
 
@@ -2773,7 +3103,99 @@ function cleanExportData(data) {
             : skill
         )
         .filter(Boolean)
+
   };
+}
+
+/* ================================================================
+   PDF COLOUR HELPERS
+   ================================================================ */
+
+function hexToRgb(hex) {
+
+  const fallback = [33, 57, 106];
+
+  if (
+    typeof hex !== 'string'
+  ) {
+    return fallback;
+  }
+
+  let value =
+    hex.trim().replace(
+      '#',
+      ''
+    );
+
+  if (
+    value.length === 3
+  ) {
+
+    value =
+      value
+        .split('')
+        .map(char =>
+          char + char
+        )
+        .join('');
+  }
+
+  if (
+    !/^[0-9a-fA-F]{6}$/.test(
+      value
+    )
+  ) {
+    return fallback;
+  }
+
+  return [
+    parseInt(
+      value.slice(0, 2),
+      16
+    ),
+
+    parseInt(
+      value.slice(2, 4),
+      16
+    ),
+
+    parseInt(
+      value.slice(4, 6),
+      16
+    )
+  ];
+}
+
+function darkenRgb(
+  rgb,
+  amount = 0.18
+) {
+
+  return rgb.map(
+    channel =>
+      Math.max(
+        0,
+        Math.round(
+          channel *
+            (1 - amount)
+        )
+      )
+  );
+}
+
+function lightenRgb(
+  rgb,
+  amount = 0.90
+) {
+
+  return rgb.map(
+    channel =>
+      Math.round(
+        channel +
+        (255 - channel) *
+          amount
+      )
+  );
 }
 
 /* ================================================================
@@ -2786,6 +3208,7 @@ function generateAtsPdf(data) {
     !window.jspdf ||
     typeof window.jspdf.jsPDF !== 'function'
   ) {
+
     throw new Error(
       'PDF library is not available.'
     );
@@ -2798,12 +3221,47 @@ function generateAtsPdf(data) {
   const cleanData =
     cleanExportData(data);
 
-  const doc = new jsPDF({
-    orientation: 'portrait',
-    unit: 'pt',
-    format: 'a4',
-    compress: true
-  });
+  const selectedTheme =
+    PDF_THEME_CONFIG[
+      cleanData.theme
+    ] ||
+    PDF_THEME_CONFIG[
+      'theme-1'
+    ];
+
+  const themeColor =
+    hexToRgb(
+      selectedTheme.accent
+    );
+
+  const themeDark =
+    darkenRgb(
+      themeColor,
+      0.20
+    );
+
+  const themeLight =
+    lightenRgb(
+      themeColor,
+      0.90
+    );
+
+  const doc =
+    new jsPDF({
+
+      orientation:
+        'portrait',
+
+      unit:
+        'pt',
+
+      format:
+        'a4',
+
+      compress:
+        true
+
+    });
 
   const pageWidth =
     doc.internal.pageSize.getWidth();
@@ -2812,8 +3270,11 @@ function generateAtsPdf(data) {
     doc.internal.pageSize.getHeight();
 
   const marginLeft = 52;
+
   const marginRight = 52;
+
   const marginTop = 54;
+
   const marginBottom = 48;
 
   const contentWidth =
@@ -2825,23 +3286,94 @@ function generateAtsPdf(data) {
     pageHeight -
     marginBottom;
 
-  let y = marginTop;
+  let y =
+    marginTop;
 
   /* --------------------------------------------------------------
-     COLORS
+     COLOURS
      -------------------------------------------------------------- */
 
   const COLORS = {
-    navy: [33, 57, 106],
 
-    text: [32, 36, 43],
+    accent:
+      themeColor,
 
-    muted: [95, 101, 111],
+    accentDark:
+      themeDark,
 
-    rule: [210, 214, 220],
+    accentLight:
+      themeLight,
 
-    footer: [145, 150, 158]
+    text:
+      [32, 36, 43],
+
+    muted:
+      [95, 101, 111],
+
+    rule:
+      [210, 214, 220],
+
+    footer:
+      [145, 150, 158]
+
   };
+
+  /* --------------------------------------------------------------
+     FONT HELPERS
+     -------------------------------------------------------------- */
+
+  function fontFamily() {
+
+    return (
+      selectedTheme.font ||
+      'helvetica'
+    );
+  }
+
+  function headingFont() {
+
+    return (
+      selectedTheme.headingFont ||
+      fontFamily()
+    );
+  }
+
+  function fontStyle(
+    emphasis = false
+  ) {
+
+    const style =
+      selectedTheme.style;
+
+    if (
+      style === 'bold'
+    ) {
+
+      return emphasis
+        ? 'bold'
+        : 'normal';
+    }
+
+    if (
+      emphasis
+    ) {
+
+      return 'bold';
+    }
+
+    return 'normal';
+  }
+
+  function setFont(
+    family,
+    style = 'normal'
+  ) {
+
+    doc.setFont(
+      family,
+      style
+    );
+  }
 
   /* --------------------------------------------------------------
      TEXT SANITIZATION
@@ -2857,7 +3389,11 @@ function generateAtsPdf(data) {
     }
 
     return String(value)
-      .replace(/\r/g, '')
+
+      .replace(
+        /\r/g,
+        ''
+      )
 
       .replace(
         /\u00A0/g,
@@ -2953,14 +3489,19 @@ function generateAtsPdf(data) {
   }
 
   function text(value) {
-    return safePdfText(value);
+
+    return safePdfText(
+      value
+    );
   }
 
   /* --------------------------------------------------------------
      BASIC HELPERS
      -------------------------------------------------------------- */
 
-  function setColor(color) {
+  function setTextColor(
+    color
+  ) {
 
     doc.setTextColor(
       color[0],
@@ -2969,9 +3510,22 @@ function generateAtsPdf(data) {
     );
   }
 
-  function setLineColor(color) {
+  function setLineColor(
+    color
+  ) {
 
     doc.setDrawColor(
+      color[0],
+      color[1],
+      color[2]
+    );
+  }
+
+  function setFillColor(
+    color
+  ) {
+
+    doc.setFillColor(
       color[0],
       color[1],
       color[2]
@@ -2993,21 +3547,103 @@ function generateAtsPdf(data) {
 
     doc.addPage();
 
-    y = marginTop;
+    y =
+      marginTop;
   }
 
-  function ensureSpace(height) {
+  function ensureSpace(
+    height
+  ) {
 
     if (
       y + height >
       bottomY
     ) {
+
       newPage();
 
       return true;
     }
 
     return false;
+  }
+
+  /* --------------------------------------------------------------
+     THEME DECORATION
+     -------------------------------------------------------------- */
+
+  function drawTopAccent() {
+
+    const style =
+      selectedTheme.style;
+
+    if (
+      style === 'bold'
+    ) {
+
+      setFillColor(
+        COLORS.accent
+      );
+
+      doc.rect(
+        0,
+        0,
+        pageWidth,
+        8,
+        'F'
+      );
+
+      return;
+    }
+
+    if (
+      style === 'ornamental'
+    ) {
+
+      setFillColor(
+        COLORS.accent
+      );
+
+      doc.rect(
+        0,
+        0,
+        pageWidth,
+        4,
+        'F'
+      );
+
+      return;
+    }
+
+    setFillColor(
+      COLORS.accent
+    );
+
+    doc.rect(
+      marginLeft,
+      28,
+      74,
+      3,
+      'F'
+    );
+  }
+
+  function drawSectionRule() {
+
+    setLineColor(
+      COLORS.rule
+    );
+
+    doc.setLineWidth(
+      0.6
+    );
+
+    doc.line(
+      marginLeft,
+      y,
+      pageWidth - marginRight,
+      y
+    );
   }
 
   /* --------------------------------------------------------------
@@ -3029,7 +3665,9 @@ function generateAtsPdf(data) {
       COLORS.rule
     );
 
-    doc.setLineWidth(0.5);
+    doc.setLineWidth(
+      0.5
+    );
 
     doc.line(
       marginLeft,
@@ -3038,14 +3676,16 @@ function generateAtsPdf(data) {
       lineY
     );
 
-    doc.setFont(
-      'helvetica',
+    setFont(
+      fontFamily(),
       'normal'
     );
 
-    doc.setFontSize(7.5);
+    doc.setFontSize(
+      7.5
+    );
 
-    setColor(
+    setTextColor(
       COLORS.footer
     );
 
@@ -3060,7 +3700,8 @@ function generateAtsPdf(data) {
       pageWidth - marginRight,
       textY,
       {
-        align: 'right'
+        align:
+          'right'
       }
     );
   }
@@ -3071,28 +3712,57 @@ function generateAtsPdf(data) {
 
   function drawHeader() {
 
+    drawTopAccent();
+
     const name =
       text(cleanData.name) ||
       'Full Name';
 
-    doc.setFont(
-      'helvetica',
-      'bold'
+    const style =
+      selectedTheme.style;
+
+    let nameSize =
+      24;
+
+    if (
+      style === 'bold'
+    ) {
+      nameSize =
+        25;
+    }
+
+    if (
+      style === 'ornamental'
+    ) {
+      nameSize =
+        23;
+    }
+
+    setFont(
+      headingFont(),
+      fontStyle(true)
     );
 
-    doc.setFontSize(24);
+    doc.setFontSize(
+      nameSize
+    );
 
-    setColor(
-      COLORS.navy
+    setTextColor(
+      COLORS.accent
     );
 
     const nameLines =
-      wrap(name);
+      wrap(
+        name,
+        contentWidth
+      );
 
     nameLines.forEach(
       line => {
 
-        ensureSpace(30);
+        ensureSpace(
+          30
+        );
 
         doc.text(
           line,
@@ -3100,29 +3770,72 @@ function generateAtsPdf(data) {
           y
         );
 
-        y += 27;
+        y +=
+          style === 'ornamental'
+            ? 26
+            : 27;
       }
     );
 
-    setLineColor(
-      COLORS.navy
-    );
+    /* Accent line */
 
-    doc.setLineWidth(1.4);
+    if (
+      style === 'mono'
+    ) {
 
-    doc.line(
-      marginLeft,
-      y + 1,
-      marginLeft + 120,
-      y + 1
-    );
+      setLineColor(
+        COLORS.accent
+      );
 
-    y += 18;
+      doc.setLineWidth(
+        1
+      );
+
+      doc.line(
+        marginLeft,
+        y + 1,
+        pageWidth - marginRight,
+        y + 1
+      );
+
+    } else {
+
+      setLineColor(
+        COLORS.accent
+      );
+
+      doc.setLineWidth(
+        style === 'bold'
+          ? 2
+          : 1.4
+      );
+
+      doc.line(
+        marginLeft,
+        y + 1,
+        marginLeft +
+          (
+            style === 'ornamental'
+              ? 170
+              : 120
+          ),
+        y + 1
+      );
+    }
+
+    y +=
+      style === 'ornamental'
+        ? 19
+        : 18;
 
     const contactParts = [
+
       cleanData.phone,
+
       cleanData.email,
+
       cleanData.address
+
     ]
       .map(text)
       .filter(Boolean);
@@ -3136,14 +3849,18 @@ function generateAtsPdf(data) {
           ' | '
         );
 
-      doc.setFont(
-        'helvetica',
+      setFont(
+        fontFamily(),
         'normal'
       );
 
-      doc.setFontSize(9.5);
+      doc.setFontSize(
+        style === 'mono'
+          ? 8.7
+          : 9.5
+      );
 
-      setColor(
+      setTextColor(
         COLORS.muted
       );
 
@@ -3156,7 +3873,9 @@ function generateAtsPdf(data) {
       contactLines.forEach(
         line => {
 
-          ensureSpace(15);
+          ensureSpace(
+            15
+          );
 
           doc.text(
             line,
@@ -3176,7 +3895,9 @@ function generateAtsPdf(data) {
      SECTION HEADING
      -------------------------------------------------------------- */
 
-  function sectionHeading(title) {
+  function sectionHeading(
+    title
+  ) {
 
     const heading =
       text(title);
@@ -3185,34 +3906,117 @@ function generateAtsPdf(data) {
       return;
     }
 
-    ensureSpace(36);
+    ensureSpace(
+      42
+    );
+
+    const style =
+      selectedTheme.style;
 
     y += 7;
 
-    setLineColor(
-      COLORS.rule
-    );
+    if (
+      style === 'bold'
+    ) {
 
-    doc.setLineWidth(0.6);
+      setFillColor(
+        COLORS.accent
+      );
 
-    doc.line(
-      marginLeft,
-      y,
-      pageWidth - marginRight,
-      y
-    );
+      doc.rect(
+        marginLeft,
+        y - 10,
+        4,
+        17,
+        'F'
+      );
+
+      setFont(
+        headingFont(),
+        'bold'
+      );
+
+      doc.setFontSize(
+        11.5
+      );
+
+      setTextColor(
+        COLORS.accent
+      );
+
+      doc.text(
+        heading.toUpperCase(),
+        marginLeft + 11,
+        y + 2
+      );
+
+      y += 20;
+
+      return;
+    }
+
+    if (
+      style === 'mono'
+    ) {
+
+      setLineColor(
+        COLORS.accent
+      );
+
+      doc.setLineWidth(
+        0.8
+      );
+
+      doc.line(
+        marginLeft,
+        y,
+        pageWidth - marginRight,
+        y
+      );
+
+      y += 15;
+
+      setFont(
+        headingFont(),
+        'bold'
+      );
+
+      doc.setFontSize(
+        10.5
+      );
+
+      setTextColor(
+        COLORS.accent
+      );
+
+      doc.text(
+        `[ ${heading.toUpperCase()} ]`,
+        marginLeft,
+        y
+      );
+
+      y += 17;
+
+      return;
+    }
+
+    drawSectionRule();
 
     y += 15;
 
-    doc.setFont(
-      'helvetica',
+    setFont(
+      headingFont(),
       'bold'
     );
 
-    doc.setFontSize(11.5);
+    doc.setFontSize(
+      style === 'ornamental'
+        ? 11.5
+        : 11.5
+    );
 
-    setColor(
-      COLORS.navy
+    setTextColor(
+      COLORS.accent
     );
 
     doc.text(
@@ -3221,7 +4025,10 @@ function generateAtsPdf(data) {
       y
     );
 
-    y += 16;
+    y +=
+      style === 'ornamental'
+        ? 17
+        : 16;
   }
 
   /* --------------------------------------------------------------
@@ -3241,22 +4048,27 @@ function generateAtsPdf(data) {
     }
 
     const size =
-      options.size || 10;
+      options.size ||
+      10;
 
     const lineHeight =
-      options.lineHeight || 14;
+      options.lineHeight ||
+      14;
 
     const gapAfter =
-      options.gapAfter ?? 8;
+      options.gapAfter ??
+      8;
 
-    doc.setFont(
-      'helvetica',
+    setFont(
+      fontFamily(),
       'normal'
     );
 
-    doc.setFontSize(size);
+    doc.setFontSize(
+      size
+    );
 
-    setColor(
+    setTextColor(
       COLORS.text
     );
 
@@ -3283,18 +4095,22 @@ function generateAtsPdf(data) {
           y
         );
 
-        y += lineHeight;
+        y +=
+          lineHeight;
       }
     );
 
-    y += gapAfter;
+    y +=
+      gapAfter;
   }
 
   /* --------------------------------------------------------------
      BULLET LIST
      -------------------------------------------------------------- */
 
-  function bulletList(items) {
+  function bulletList(
+    items
+  ) {
 
     const bulletX =
       marginLeft;
@@ -3311,12 +4127,14 @@ function generateAtsPdf(data) {
       .forEach(
         item => {
 
-          doc.setFont(
-            'helvetica',
+          setFont(
+            fontFamily(),
             'normal'
           );
 
-          doc.setFontSize(9.8);
+          doc.setFontSize(
+            9.8
+          );
 
           const lines =
             doc.splitTextToSize(
@@ -3333,14 +4151,20 @@ function generateAtsPdf(data) {
               3
           );
 
-          setColor(
-            COLORS.text
+          setTextColor(
+            COLORS.accent
           );
 
           doc.text(
-            '-',
+            selectedTheme.style === 'mono'
+              ? '*'
+              : '-',
             bulletX,
             y
+          );
+
+          setTextColor(
+            COLORS.text
           );
 
           lines.forEach(
@@ -3352,7 +4176,8 @@ function generateAtsPdf(data) {
                 y
               );
 
-              y += lineHeight;
+              y +=
+                lineHeight;
             }
           );
 
@@ -3397,18 +4222,22 @@ function generateAtsPdf(data) {
       return;
     }
 
-    ensureSpace(55);
+    ensureSpace(
+      55
+    );
 
     if (position) {
 
-      doc.setFont(
-        'helvetica',
+      setFont(
+        headingFont(),
         'bold'
       );
 
-      doc.setFontSize(11);
+      doc.setFontSize(
+        11
+      );
 
-      setColor(
+      setTextColor(
         COLORS.text
       );
 
@@ -3434,15 +4263,17 @@ function generateAtsPdf(data) {
 
     if (company) {
 
-      doc.setFont(
-        'helvetica',
+      setFont(
+        fontFamily(),
         'bold'
       );
 
-      doc.setFontSize(9.8);
+      doc.setFontSize(
+        9.8
+      );
 
-      setColor(
-        COLORS.navy
+      setTextColor(
+        COLORS.accent
       );
 
       const lines =
@@ -3467,22 +4298,31 @@ function generateAtsPdf(data) {
 
     y += 5;
 
-    if (duties.length) {
-      bulletList(duties);
+    if (
+      duties.length
+    ) {
+
+      bulletList(
+        duties
+      );
     }
 
     if (reference) {
 
-      ensureSpace(17);
+      ensureSpace(
+        17
+      );
 
-      doc.setFont(
-        'helvetica',
+      setFont(
+        fontFamily(),
         'normal'
       );
 
-      doc.setFontSize(8.8);
+      doc.setFontSize(
+        8.8
+      );
 
-      setColor(
+      setTextColor(
         COLORS.muted
       );
 
@@ -3510,11 +4350,25 @@ function generateAtsPdf(data) {
 
     y += 7;
 
-    setLineColor(
-      COLORS.rule
-    );
+    if (
+      selectedTheme.style ===
+      'ornamental'
+    ) {
 
-    doc.setLineWidth(0.35);
+      setLineColor(
+        COLORS.accentLight
+      );
+
+    } else {
+
+      setLineColor(
+        COLORS.rule
+      );
+    }
+
+    doc.setLineWidth(
+      0.35
+    );
 
     doc.line(
       marginLeft,
@@ -3584,14 +4438,16 @@ function generateAtsPdf(data) {
       titleLines.length
     ) {
 
-      doc.setFont(
-        'helvetica',
+      setFont(
+        headingFont(),
         'bold'
       );
 
-      doc.setFontSize(10.5);
+      doc.setFontSize(
+        10.5
+      );
 
-      setColor(
+      setTextColor(
         COLORS.text
       );
 
@@ -3613,15 +4469,17 @@ function generateAtsPdf(data) {
       institutionLines.length
     ) {
 
-      doc.setFont(
-        'helvetica',
+      setFont(
+        fontFamily(),
         'normal'
       );
 
-      doc.setFontSize(9.5);
+      doc.setFontSize(
+        9.5
+      );
 
-      setColor(
-        COLORS.navy
+      setTextColor(
+        COLORS.accent
       );
 
       institutionLines.forEach(
@@ -3640,14 +4498,16 @@ function generateAtsPdf(data) {
 
     if (year) {
 
-      doc.setFont(
-        'helvetica',
+      setFont(
+        fontFamily(),
         'normal'
       );
 
-      doc.setFontSize(9);
+      doc.setFontSize(
+        9
+      );
 
-      setColor(
+      setTextColor(
         COLORS.muted
       );
 
@@ -3682,14 +4542,16 @@ function generateAtsPdf(data) {
       return;
     }
 
-    doc.setFont(
-      'helvetica',
+    setFont(
+      fontFamily(),
       'normal'
     );
 
-    doc.setFontSize(9.8);
+    doc.setFontSize(
+      9.8
+    );
 
-    setColor(
+    setTextColor(
       COLORS.text
     );
 
@@ -3721,7 +4583,8 @@ function generateAtsPdf(data) {
           y
         );
 
-        y += lineHeight;
+        y +=
+          lineHeight;
       }
     );
 
@@ -3747,9 +4610,18 @@ function generateAtsPdf(data) {
     paragraph(
       cleanData.about,
       {
-        size: 10,
-        lineHeight: 14.5,
-        gapAfter: 7
+        size:
+          selectedTheme.style === 'mono'
+            ? 9
+            : 10,
+
+        lineHeight:
+          selectedTheme.style === 'mono'
+            ? 13.5
+            : 14.5,
+
+        gapAfter:
+          7
       }
     );
   }
@@ -3779,7 +4651,9 @@ function generateAtsPdf(data) {
 
     experience.forEach(
       row =>
-        renderExperience(row)
+        renderExperience(
+          row
+        )
     );
   }
 
@@ -3807,7 +4681,9 @@ function generateAtsPdf(data) {
 
     education.forEach(
       row =>
-        renderEducation(row)
+        renderEducation(
+          row
+        )
     );
   }
 
@@ -3846,7 +4722,9 @@ function generateAtsPdf(data) {
     page++
   ) {
 
-    doc.setPage(page);
+    doc.setPage(
+      page
+    );
 
     drawFooter(
       page,
@@ -4001,11 +4879,6 @@ document.addEventListener(
             }
           );
 
-          /*
-           * Handles the case where jsPDF loaded before
-           * Alpine initialized.
-           */
-
           if (
             window.jspdf &&
             typeof window.jspdf.jsPDF ===
@@ -4091,6 +4964,7 @@ document.addEventListener(
         exportData() {
 
           return cleanExportData({
+
             theme:
               this.theme,
 
@@ -4117,6 +4991,7 @@ document.addEventListener(
 
             skills:
               this.skills
+
           });
         },
 
@@ -4307,6 +5182,7 @@ document.addEventListener(
               this[type]
             )
           ) {
+
             this.lastRemoved =
               null;
 
@@ -4356,6 +5232,7 @@ document.addEventListener(
                 id;
 
               this.autosave();
+
             };
 
           if (
@@ -4461,7 +5338,9 @@ document.addEventListener(
 
             localStorage.setItem(
               STORAGE_KEY,
-              JSON.stringify(data)
+              JSON.stringify(
+                data
+              )
             );
 
           } catch (err) {
@@ -4539,7 +5418,9 @@ document.addEventListener(
           try {
 
             const parsed =
-              JSON.parse(raw);
+              JSON.parse(
+                raw
+              );
 
             const normalized =
               normalizeData(
@@ -4744,6 +5625,7 @@ document.addEventListener(
                     'Sortable cleanup error:',
                     err
                   );
+
                 }
               }
             );
@@ -4959,6 +5841,21 @@ document.addEventListener(
             const data =
               this.exportData();
 
+            /*
+             * The selected theme is already contained in data.theme.
+             *
+             * generateAtsPdf() uses that value to select:
+             *
+             *   - theme colour
+             *   - PDF font family approximation
+             *   - heading treatment
+             *   - accent treatment
+             *   - bullet style
+             *   - decorative treatment
+             *
+             * Text remains real PDF text for ATS compatibility.
+             */
+
             const doc =
               generateAtsPdf(
                 data
@@ -4995,7 +5892,7 @@ document.addEventListener(
             );
 
             this.showToast(
-              'PDF downloaded'
+              'Themed ATS-friendly PDF downloaded'
             );
 
           } catch (err) {
@@ -5026,11 +5923,6 @@ document.addEventListener(
             return;
           }
 
-          /*
-           * Use the native Web Share API when supported.
-           * Otherwise give the user a safe fallback message.
-           */
-
           if (
             typeof navigator.share ===
             'function'
@@ -5052,16 +5944,12 @@ document.addEventListener(
 
             } catch (err) {
 
-              /*
-               * AbortError means the user closed/cancelled
-               * the native share dialog.
-               */
-
               if (
                 err &&
                 err.name ===
                   'AbortError'
               ) {
+
                 return;
               }
 
