@@ -718,111 +718,137 @@
     function capitalizeWords(str) {
       return String(str ?? '').replace(/\b\w/g, c => c.toUpperCase());
     }
-
-   // ---------- ATS-friendly professional PDF ----------
-// Real selectable text, single-column layout, clean typography,
-// controlled page breaks, readable bullets and consistent spacing.
+// ---------- ATS-friendly professional PDF ----------
+// Single column, selectable text, ATS-safe characters,
+// professional spacing and reliable PDF text extraction.
 
 function generateAtsPdf(data) {
   const { jsPDF } = window.jspdf;
 
   const doc = new jsPDF({
+    orientation: 'portrait',
     unit: 'pt',
     format: 'a4',
-    orientation: 'portrait',
     compress: true
   });
-
-  // ------------------------------------------------------------
-  // PAGE / LAYOUT CONSTANTS
-  // ------------------------------------------------------------
 
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
 
-  const MARGIN = {
-    left: 52,
-    right: 52,
-    top: 54,
-    bottom: 50
-  };
+  const marginLeft = 52;
+  const marginRight = 52;
+  const marginTop = 54;
+  const marginBottom = 48;
 
-  const contentWidth = pageWidth - MARGIN.left - MARGIN.right;
-  const bottomLimit = pageHeight - MARGIN.bottom;
+  const contentWidth = pageWidth - marginLeft - marginRight;
+  const bottomY = pageHeight - marginBottom;
 
-  let y = MARGIN.top;
+  let y = marginTop;
 
-  // Professional neutral palette.
-  // Kept restrained so the PDF remains ATS-friendly.
+  // ------------------------------------------------------------
+  // COLORS
+  // ------------------------------------------------------------
+
   const COLORS = {
-    text: [31, 36, 48],
-    muted: [92, 99, 112],
-    heading: [33, 57, 106],
-    rule: [210, 214, 221],
-    bullet: [55, 65, 81],
+    navy: [33, 57, 106],
+    text: [32, 36, 43],
+    muted: [95, 101, 111],
+    rule: [210, 214, 220],
     footer: [145, 150, 158]
   };
 
   // ------------------------------------------------------------
-  // BASIC HELPERS
+  // TEXT SANITIZATION
   // ------------------------------------------------------------
 
-  function clean(value) {
-    return String(value ?? '')
+  /*
+   * Standard PDF fonts such as Helvetica use WinAnsiEncoding.
+   * Avoid Unicode punctuation that can cause extraction problems.
+   *
+   * This function converts common Unicode punctuation into
+   * safe ASCII equivalents.
+   */
+  function safePdfText(value) {
+    if (value === null || value === undefined) {
+      return '';
+    }
+
+    return String(value)
       .replace(/\r/g, '')
+      .replace(/\u00A0/g, ' ')
+      .replace(/[\u2018\u2019\u201A\u201B]/g, "'")
+      .replace(/[\u201C\u201D\u201E\u201F]/g, '"')
+      .replace(/[\u2013\u2014]/g, '-')
+      .replace(/\u2212/g, '-')
+      .replace(/[\u2022\u25CF\u25CB\u2043]/g, '-')
+      .replace(/\u2192/g, '->')
+      .replace(/\u2190/g, '<-')
+      .replace(/\u2026/g, '...')
+      .replace(/\u00B7/g, '-')
+      .replace(/\u2122/g, '(TM)')
+      .replace(/\u00AE/g, '(R)')
+      .replace(/\u00A9/g, '(C)')
+      .replace(/\uFEFF/g, '')
+      .replace(/\u200B/g, '')
+      .replace(/\u200C/g, '')
+      .replace(/\u200D/g, '')
       .replace(/[ \t]+/g, ' ')
       .trim();
   }
 
-  function cleanLine(value) {
-    return clean(value).replace(/\s+/g, ' ');
+  function text(value) {
+    return safePdfText(value);
   }
 
-  // IMPORTANT:
-  // Do NOT use capitalizeWords() inside the PDF.
-  // It breaks names and technical terms:
-  // JavaScript -> Javascript
-  // Node.js -> Node.Js
-  // GitHub -> Github
-  // PostgreSQL -> Postgresql
-  function displayText(value) {
-    return clean(value);
+  // ------------------------------------------------------------
+  // BASIC PDF HELPERS
+  // ------------------------------------------------------------
+
+  function setFont(size, style = 'normal') {
+    doc.setFont('helvetica', style);
+    doc.setFontSize(size);
+    doc.setTextColor(
+      COLORS.text[0],
+      COLORS.text[1],
+      COLORS.text[2]
+    );
   }
 
-  function setTextColor(color) {
-    doc.setTextColor(color[0], color[1], color[2]);
+  function setColor(color) {
+    doc.setTextColor(
+      color[0],
+      color[1],
+      color[2]
+    );
   }
 
-  function setDrawColor(color) {
-    doc.setDrawColor(color[0], color[1], color[2]);
+  function setLineColor(color) {
+    doc.setDrawColor(
+      color[0],
+      color[1],
+      color[2]
+    );
   }
 
-  function setFillColor(color) {
-    doc.setFillColor(color[0], color[1], color[2]);
+  function wrap(value, width = contentWidth) {
+    return doc.splitTextToSize(
+      text(value),
+      width
+    );
   }
 
-  function addPage() {
+  function newPage() {
     doc.addPage();
-    y = MARGIN.top;
+    y = marginTop;
   }
 
-  function ensureSpace(requiredHeight) {
-    if (y + requiredHeight > bottomLimit) {
-      addPage();
+  function ensureSpace(height) {
+    if (y + height > bottomY) {
+      newPage();
       return true;
     }
 
     return false;
-  }
-
-  function setFont(size = 10, style = 'normal') {
-    doc.setFont('helvetica', style);
-    doc.setFontSize(size);
-    setTextColor(COLORS.text);
-  }
-
-  function wrapText(text, width) {
-    return doc.splitTextToSize(clean(text), width);
   }
 
   // ------------------------------------------------------------
@@ -830,90 +856,97 @@ function generateAtsPdf(data) {
   // ------------------------------------------------------------
 
   function drawFooter(pageNumber, totalPages) {
-    const footerY = pageHeight - 25;
+    const lineY = pageHeight - 31;
+    const textY = pageHeight - 18;
 
-    setDrawColor(COLORS.rule);
+    setLineColor(COLORS.rule);
     doc.setLineWidth(0.5);
+
     doc.line(
-      MARGIN.left,
-      footerY - 10,
-      pageWidth - MARGIN.right,
-      footerY - 10
+      marginLeft,
+      lineY,
+      pageWidth - marginRight,
+      lineY
     );
 
-    setFont(7.5, 'normal');
-    setTextColor(COLORS.footer);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7.5);
+    setColor(COLORS.footer);
 
     doc.text(
       'Created with Re-V CV Maker',
-      MARGIN.left,
-      footerY
+      marginLeft,
+      textY
     );
 
-    const pageText = `Page ${pageNumber} of ${totalPages}`;
-
     doc.text(
-      pageText,
-      pageWidth - MARGIN.right,
-      footerY,
+      `Page ${pageNumber} of ${totalPages}`,
+      pageWidth - marginRight,
+      textY,
       { align: 'right' }
     );
   }
 
   // ------------------------------------------------------------
-  // HEADER
+  // NAME / CONTACT HEADER
   // ------------------------------------------------------------
 
-  function drawNameHeader() {
-    const name = displayText(data.name) || 'Full Name';
+  function drawHeader() {
+    const name = text(data.name) || 'Full Name';
 
-    // Name
-    setFont(24, 'bold');
-    setTextColor(COLORS.heading);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(24);
+    setColor(COLORS.navy);
 
-    const nameLines = wrapText(name, contentWidth);
+    const nameLines = wrap(name);
 
     nameLines.forEach(line => {
-      doc.text(line, MARGIN.left, y);
+      doc.text(
+        line,
+        marginLeft,
+        y
+      );
+
       y += 27;
     });
 
-    // Small professional rule
-    setDrawColor(COLORS.heading);
-    doc.setLineWidth(1.5);
+    // Accent rule
+    setLineColor(COLORS.navy);
+    doc.setLineWidth(1.4);
 
     doc.line(
-      MARGIN.left,
-      y + 2,
-      MARGIN.left + Math.min(contentWidth, 125),
-      y + 2
+      marginLeft,
+      y + 1,
+      marginLeft + 120,
+      y + 1
     );
 
     y += 18;
 
-    // Contact information
-    const contacts = [
+    const contactParts = [
       data.phone,
       data.email,
       data.address
     ]
-      .map(cleanLine)
+      .map(text)
       .filter(Boolean);
 
-    if (contacts.length) {
-      setFont(9.5, 'normal');
-      setTextColor(COLORS.muted);
+    if (contactParts.length) {
+      const contactText = contactParts.join(' | ');
 
-      // Keep contact details selectable and ATS-readable.
-      const contactText = contacts.join('  |  ');
-      const contactLines = wrapText(contactText, contentWidth);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      setColor(COLORS.muted);
+
+      const contactLines = wrap(
+        contactText,
+        contentWidth
+      );
 
       contactLines.forEach(line => {
-        ensureSpace(15);
-
         doc.text(
           line,
-          MARGIN.left,
+          marginLeft,
           y
         );
 
@@ -929,66 +962,74 @@ function generateAtsPdf(data) {
   // ------------------------------------------------------------
 
   function sectionHeading(title) {
-    const headingHeight = 30;
+    const heading = text(title);
 
-    // Prevent heading from being stranded at bottom of page.
-    if (y + headingHeight > bottomLimit) {
-      addPage();
-    }
+    if (!heading) return;
 
-    y += 8;
+    // Keep heading with following content.
+    ensureSpace(36);
 
-    setDrawColor(COLORS.rule);
-    doc.setLineWidth(0.7);
+    y += 7;
+
+    setLineColor(COLORS.rule);
+    doc.setLineWidth(0.6);
 
     doc.line(
-      MARGIN.left,
+      marginLeft,
       y,
-      pageWidth - MARGIN.right,
+      pageWidth - marginRight,
       y
     );
 
     y += 15;
 
-    setFont(11.5, 'bold');
-    setTextColor(COLORS.heading);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(11.5);
+    setColor(COLORS.navy);
 
     doc.text(
-      clean(title).toUpperCase(),
-      MARGIN.left,
+      heading.toUpperCase(),
+      marginLeft,
       y
     );
 
-    y += 15;
+    y += 16;
   }
 
   // ------------------------------------------------------------
-  // BODY PARAGRAPH
+  // PARAGRAPH
   // ------------------------------------------------------------
 
-  function paragraph(text, options = {}) {
-    const {
-      size = 10,
-      lineHeight = 14,
-      gapAfter = 8,
-      color = COLORS.text
-    } = options;
+  function paragraph(value, options = {}) {
+    const content = text(value);
 
-    const value = clean(text);
+    if (!content) return;
 
-    if (!value) return;
+    const size = options.size || 10;
+    const lineHeight = options.lineHeight || 14;
+    const gapAfter = options.gapAfter ?? 8;
 
-    setFont(size, 'normal');
-    setTextColor(color);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(size);
+    setColor(COLORS.text);
 
-    const lines = wrapText(value, contentWidth);
+    const lines = wrap(
+      content,
+      contentWidth
+    );
 
-    const blockHeight = lines.length * lineHeight;
+    const requiredHeight =
+      lines.length * lineHeight;
 
-    ensureSpace(blockHeight);
+    ensureSpace(requiredHeight);
 
     lines.forEach(line => {
-      doc.text(line, MARGIN.left, y);
+      doc.text(
+        line,
+        marginLeft,
+        y
+      );
+
       y += lineHeight;
     });
 
@@ -1000,49 +1041,46 @@ function generateAtsPdf(data) {
   // ------------------------------------------------------------
 
   function bulletList(items) {
-    const bulletIndent = 13;
-    const textX = MARGIN.left + bulletIndent;
-    const textWidth = contentWidth - bulletIndent;
+    const bulletX = marginLeft;
+    const textX = marginLeft + 13;
+    const textWidth = contentWidth - 13;
 
     items
-      .map(cleanLine)
+      .map(text)
       .filter(Boolean)
       .forEach(item => {
 
-        setFont(9.8, 'normal');
-        setTextColor(COLORS.text);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9.8);
 
-        const lines = wrapText(item, textWidth);
-
-        // Keep a bullet and at least the first line together.
-        const requiredHeight = Math.max(
-          14,
-          lines.length * 13.5
+        const lines = doc.splitTextToSize(
+          item,
+          textWidth
         );
 
-        ensureSpace(requiredHeight);
+        const lineHeight = 13.5;
 
-        // Bullet
-        setFillColor(COLORS.bullet);
-
-        doc.circle(
-          MARGIN.left + 3.5,
-          y - 3.2,
-          1.7,
-          'F'
+        ensureSpace(
+          lines.length * lineHeight + 3
         );
 
-        // Text
-        setTextColor(COLORS.text);
+        // ASCII hyphen instead of Unicode bullet.
+        setColor(COLORS.text);
 
-        lines.forEach((line, index) => {
+        doc.text(
+          '-',
+          bulletX,
+          y
+        );
+
+        lines.forEach(line => {
           doc.text(
             line,
             textX,
             y
           );
 
-          y += 13.5;
+          y += lineHeight;
         });
 
         y += 2;
@@ -1052,89 +1090,115 @@ function generateAtsPdf(data) {
   }
 
   // ------------------------------------------------------------
-  // EXPERIENCE BLOCK
+  // EXPERIENCE
   // ------------------------------------------------------------
 
-  function experienceBlock(row) {
-    const company = displayText(row.company);
-    const position = displayText(row.position);
-    const reference = displayText(row.reference);
+  function renderExperience(row) {
+    const position = text(row.position);
+    const company = text(row.company);
+    const reference = text(row.reference);
 
     const duties = String(row.duties || '')
-      .split('\n')
-      .map(line => line.trim())
+      .split(/\r?\n/)
+      .map(text)
       .filter(Boolean);
 
-    if (!company && !position && !duties.length && !reference) {
+    if (
+      !position &&
+      !company &&
+      !duties.length &&
+      !reference
+    ) {
       return;
     }
 
-    // Estimate enough space for the heading before starting.
-    const estimatedHeadingHeight = 32;
+    // Make sure the job heading does not appear
+    // by itself at the bottom of the page.
+    ensureSpace(55);
 
-    if (y + estimatedHeadingHeight > bottomLimit) {
-      addPage();
-    }
-
-    // Position
     if (position) {
-      setFont(11, 'bold');
-      setTextColor(COLORS.text);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(11);
+      setColor(COLORS.text);
 
-      const positionLines = wrapText(position, contentWidth);
+      const lines = wrap(
+        position,
+        contentWidth
+      );
 
-      positionLines.forEach(line => {
-        doc.text(line, MARGIN.left, y);
+      lines.forEach(line => {
+        doc.text(
+          line,
+          marginLeft,
+          y
+        );
+
         y += 14;
       });
     }
 
-    // Company
     if (company) {
-      setFont(10, 'bold');
-      setTextColor(COLORS.heading);
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(9.8);
+      setColor(COLORS.navy);
 
-      const companyLines = wrapText(company, contentWidth);
+      const lines = wrap(
+        company,
+        contentWidth
+      );
 
-      companyLines.forEach(line => {
-        doc.text(line, MARGIN.left, y);
+      lines.forEach(line => {
+        doc.text(
+          line,
+          marginLeft,
+          y
+        );
+
         y += 13;
       });
     }
 
     y += 5;
 
-    // Duties
     if (duties.length) {
       bulletList(duties);
     }
 
-    // Reference
     if (reference) {
-      ensureSpace(18);
+      ensureSpace(17);
 
-      setFont(8.8, 'normal');
-      setTextColor(COLORS.muted);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8.8);
+      setColor(COLORS.muted);
 
-      doc.text(
+      const referenceLines = wrap(
         `Reference: ${reference}`,
-        MARGIN.left,
-        y
+        contentWidth
       );
 
-      y += 13;
+      referenceLines.forEach(line => {
+        doc.text(
+          line,
+          marginLeft,
+          y
+        );
+
+        y += 12;
+      });
+
+      y += 2;
     }
 
-    y += 8;
+    y += 7;
 
-    // Small separator between jobs.
-    setDrawColor(COLORS.rule);
+    // Job separator
+    setLineColor(COLORS.rule);
     doc.setLineWidth(0.35);
 
     doc.line(
-      MARGIN.left,
+      marginLeft,
       y,
-      pageWidth - MARGIN.right,
+      pageWidth - marginRight,
       y
     );
 
@@ -1142,51 +1206,93 @@ function generateAtsPdf(data) {
   }
 
   // ------------------------------------------------------------
-  // EDUCATION BLOCK
+  // EDUCATION
   // ------------------------------------------------------------
 
-  function educationBlock(row) {
-    const institution = displayText(row.institution);
-    const qualification = displayText(row.qualification);
-    const year = cleanLine(row.year);
+  function renderEducation(row) {
+    const institution = text(row.institution);
+    const qualification = text(row.qualification);
+    const year = text(row.year);
 
-    if (!institution && !qualification && !year) {
+    if (
+      !institution &&
+      !qualification &&
+      !year
+    ) {
       return;
     }
 
-    const title = [qualification, institution]
-      .filter(Boolean)
-      .join(' — ');
+    // Use separate lines instead of a long Unicode
+    // qualification/institution string.
+    //
+    // Example:
+    //
+    // BSc Computer Science
+    // Nelson Mandela University
+    // 2022
 
-    const lines = wrapText(
-      title || institution || qualification,
-      contentWidth
+    const title = qualification;
+
+    const institutionText = institution;
+
+    const titleLines = title
+      ? wrap(title, contentWidth)
+      : [];
+
+    const institutionLines = institutionText
+      ? wrap(institutionText, contentWidth)
+      : [];
+
+    const estimatedHeight =
+      (titleLines.length * 14) +
+      (institutionLines.length * 13) +
+      (year ? 13 : 0) +
+      12;
+
+    ensureSpace(
+      Math.max(estimatedHeight, 42)
     );
 
-    const requiredHeight = lines.length * 14 + 18;
+    if (titleLines.length) {
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(10.5);
+      setColor(COLORS.text);
 
-    ensureSpace(requiredHeight);
+      titleLines.forEach(line => {
+        doc.text(
+          line,
+          marginLeft,
+          y
+        );
 
-    setFont(10.2, 'bold');
-    setTextColor(COLORS.text);
+        y += 14;
+      });
+    }
 
-    lines.forEach(line => {
-      doc.text(
-        line,
-        MARGIN.left,
-        y
-      );
+    if (institutionLines.length) {
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9.5);
+      setColor(COLORS.navy);
 
-      y += 14;
-    });
+      institutionLines.forEach(line => {
+        doc.text(
+          line,
+          marginLeft,
+          y
+        );
+
+        y += 13;
+      });
+    }
 
     if (year) {
-      setFont(9.2, 'normal');
-      setTextColor(COLORS.muted);
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      setColor(COLORS.muted);
 
       doc.text(
         year,
-        MARGIN.left,
+        marginLeft,
         y
       );
 
@@ -1200,33 +1306,35 @@ function generateAtsPdf(data) {
   // SKILLS
   // ------------------------------------------------------------
 
-  function skillsBlock(skills) {
-    const values = skills
-      .map(displayText)
+  function renderSkills(skills) {
+    const cleanSkills = skills
+      .map(text)
       .filter(Boolean);
 
-    if (!values.length) return;
+    if (!cleanSkills.length) return;
 
-    setFont(9.8, 'normal');
-    setTextColor(COLORS.text);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(9.8);
+    setColor(COLORS.text);
 
-    // Use a comma-separated list rather than visual tags/pills.
-    // This remains highly ATS-readable.
-    const skillText = values.join('  •  ');
+    // Use commas instead of Unicode bullets.
+    const skillText = cleanSkills.join(', ');
 
-    const lines = wrapText(
+    const lines = wrap(
       skillText,
       contentWidth
     );
 
     const lineHeight = 14;
 
-    ensureSpace(lines.length * lineHeight);
+    ensureSpace(
+      lines.length * lineHeight
+    );
 
     lines.forEach(line => {
       doc.text(
         line,
-        MARGIN.left,
+        marginLeft,
         y
       );
 
@@ -1237,13 +1345,13 @@ function generateAtsPdf(data) {
   }
 
   // ------------------------------------------------------------
-  // DOCUMENT CONTENT
+  // BUILD PDF
   // ------------------------------------------------------------
 
-  drawNameHeader();
+  drawHeader();
 
-  // PROFESSIONAL SUMMARY
-  if (clean(data.about)) {
+  // SUMMARY
+  if (text(data.about)) {
     sectionHeading('Professional Summary');
 
     paragraph(data.about, {
@@ -1254,47 +1362,53 @@ function generateAtsPdf(data) {
   }
 
   // EXPERIENCE
-  const validExperience = (data.experience || []).filter(row =>
-    clean(row.company) ||
-    clean(row.position) ||
-    clean(row.duties) ||
-    clean(row.reference)
-  );
+  const experience = Array.isArray(data.experience)
+    ? data.experience.filter(row =>
+        text(row.company) ||
+        text(row.position) ||
+        text(row.duties) ||
+        text(row.reference)
+      )
+    : [];
 
-  if (validExperience.length) {
+  if (experience.length) {
     sectionHeading('Professional Experience');
 
-    validExperience.forEach(row => {
-      experienceBlock(row);
+    experience.forEach(row => {
+      renderExperience(row);
     });
   }
 
   // EDUCATION
-  const validEducation = (data.education || []).filter(row =>
-    clean(row.institution) ||
-    clean(row.qualification) ||
-    clean(row.year)
-  );
+  const education = Array.isArray(data.education)
+    ? data.education.filter(row =>
+        text(row.institution) ||
+        text(row.qualification) ||
+        text(row.year)
+      )
+    : [];
 
-  if (validEducation.length) {
+  if (education.length) {
     sectionHeading('Education');
 
-    validEducation.forEach(row => {
-      educationBlock(row);
+    education.forEach(row => {
+      renderEducation(row);
     });
   }
 
   // SKILLS
-  const validSkills = (data.skills || []).filter(Boolean);
+  const skills = Array.isArray(data.skills)
+    ? data.skills.filter(Boolean)
+    : [];
 
-  if (validSkills.length) {
+  if (skills.length) {
     sectionHeading('Skills');
 
-    skillsBlock(validSkills);
+    renderSkills(skills);
   }
 
   // ------------------------------------------------------------
-  // FINALISE FOOTERS
+  // FOOTERS ON ALL PAGES
   // ------------------------------------------------------------
 
   const totalPages = doc.internal.getNumberOfPages();
@@ -1303,9 +1417,6 @@ function generateAtsPdf(data) {
     doc.setPage(page);
     drawFooter(page, totalPages);
   }
-
-  // Reset colour in case this function is extended later.
-  setTextColor(COLORS.text);
 
   return doc;
 }
