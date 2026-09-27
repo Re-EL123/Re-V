@@ -13,7 +13,1011 @@
 <style>
   body {
     margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verd<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Re-V CV Maker Tool</title>
+
+<!-- Google Fonts used by the decorative preview themes -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel&family=Merriweather&family=Dancing+Script&family=Playfair+Display&family=Roboto+Slab&family=Great+Vibes&family=Libre+Baskerville&family=Cormorant&family=Astloch&family=Galada&family=Yellowtail&family=Sacramento&family=Petit+Formal+Script&family=Aleo&family=Special+Elite&family=Covered+By+Your+Grace&family=Charmonman&family=Caveat&family=Pacifico&family=Satisfy&family=Kaushan+Script&family=Indie+Flower&family=Shadows+Into+Light&family=Gloria+Hallelujah&family=Rock+Salt&family=Josefin+Sans&family=Anton&family=Bebas+Neue&family=Oswald&family=Lora&family=PT+Serif&family=Play&family=Amatic+SC&family=Crimson+Text&family=Vollkorn&family=Bitter&family=Ubuntu&family=Josefin+Slab&family=Spectral&display=swap" rel="stylesheet">
+
+<!--
+  Dependency choices, briefly:
+  - Alpine.js: reactivity for the live split-view preview, without a build step.
+  - SortableJS: drag-to-reorder for education/experience/skills.
+  - jsPDF: builds the downloadable PDF as real selectable text (ATS-safe) — see generateAtsPdf().
+  - Icons are hand-inlined SVGs in Lucide's stroke style rather than pulling in the Lucide
+    runtime, so there's no dependency on JS re-scanning the DOM after Alpine re-renders.
+  - Styling is a small hand-written CSS design system (custom properties) rather than a
+    utility framework, to keep this a single dependency-light file. Swapping in Tailwind's
+    Play CDN or Pico.css instead would be a drop-in change if preferred.
+  Only jsPDF's hash could be verified against a known-good source, so only that tag carries
+  Subresource Integrity; the others are pinned to exact versions instead of "@latest".
+-->
+<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.1.1/jspdf.umd.min.js"
+        integrity="sha512-/Am09zlYshHgRizY3RkConGj4BsYIdb8mS7r5XAXw0rTiLgGSHzpUHTQBhinWR32C/KzLr749J1xuORzT2JnRA=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"></script>
+
+<style>
+  :root {
+    --bg: #eef1f5;
+    --surface: #ffffff;
+    --border: #dde2ea;
+    --text: #1f2430;
+    --muted: #6b7280;
+    --primary: #4f46e5;
+    --primary-dark: #4338ca;
+    --danger: #dc2626;
+    --danger-dark: #b91c1c;
+    --radius: 10px;
+    --radius-sm: 6px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.06);
+  }
+
+  * { box-sizing: border-box; }
+
+  [x-cloak] { display: none !important; }
+
+  body {
+    margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: var(--space-5) var(--space-4) var(--space-6);
+  }
+
+  a { color: var(--primary); }
+
+  .app-shell { max-width: 1180px; margin: 0 auto; }
+
+  header.app-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-5);
+  }
+
+  header.app-header h1 { margin: 0; font-size: 1.6rem; }
+
+  .toolbar { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+
+  .progress-wrap {
+    flex: 1 1 240px;
+    min-width: 200px;
+  }
+  .progress-track {
+    background: var(--border);
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), #7c3aed);
+    transition: width 400ms ease;
+  }
+  .progress-label { font-size: 0.78rem; color: var(--muted); margin-top: 4px; }
+
+  button {
+    font: inherit;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 150ms ease, transform 100ms ease, border-color 150ms ease;
+  }
+  button:hover { border-color: var(--primary); color: var(--primary); }
+  button:active { transform: translateY(1px); }
+  button.primary { background: var(--primary); border-color: var(--primary); color: #fff; }
+  button.primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); color: #fff; }
+  button.ghost { background: transparent; border-color: transparent; padding: 0.4rem 0.6rem; }
+  button.danger-ghost { background: transparent; border-color: transparent; color: var(--danger); padding: 0.3rem 0.5rem; }
+  button.danger-ghost:hover { color: var(--danger-dark); border-color: transparent; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  button svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  .app-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: var(--space-5);
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .app-grid { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: var(--space-5);
+  }
+
+  .preview-panel { position: sticky; top: var(--space-4); }
+  @media (max-width: 900px) { .preview-panel { position: static; } }
+
+  fieldset {
+    border: none;
+    padding: 0;
+    margin: 0 0 var(--space-5);
+  }
+  fieldset legend {
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: var(--space-3);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .field { margin-bottom: var(--space-3); }
+  label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 4px; }
+
+  input, textarea, select {
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    font-size: 0.95rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    font-family: inherit;
+    background: #fff;
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+  }
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(79,70,229,0.15);
+  }
+  input.invalid { border-color: var(--danger); }
+  .error-text { color: var(--danger); font-size: 0.78rem; margin-top: 4px; }
+  .hint { font-size: 0.78rem; color: var(--muted); margin: 4px 0 0; }
+
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+  @media (max-width: 520px) { .contact-grid { grid-template-columns: 1fr; } }
+
+  /* theme swatch grid */
+  .theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: var(--space-2);
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 2px;
+  }
+  .theme-swatch {
+    border: 2px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.55rem 0.4rem;
+    text-align: center;
+    background: #fafbfc;
+    font-size: 0.72rem;
+    line-height: 1.25;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .theme-swatch .swatch-glyph { font-size: 1.1rem; font-weight: 700; }
+  .theme-swatch.active { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(79,70,229,0.2); }
+
+  /* repeatable rows */
+  .row-list { display: flex; flex-direction: column; gap: var(--space-2); }
+  .row-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3);
+    display: flex;
+    gap: var(--space-2);
+    align-items: flex-start;
+    background: #fafbfc;
+  }
+  .row-card .drag-handle {
+    cursor: grab;
+    color: var(--muted);
+    padding-top: 8px;
+    touch-action: none;
+  }
+  .row-card .drag-handle:active { cursor: grabbing; }
+  .row-fields { flex: 1; display: grid; gap: var(--space-2); }
+  .row-fields.two-col { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 520px) { .row-fields.two-col { grid-template-columns: 1fr; } }
+  .sortable-ghost { opacity: 0.4; }
+
+  .empty-state { text-align: center; color: var(--muted); padding: var(--space-4) 0; }
+  .empty-state svg { width: 96px; height: 96px; opacity: 0.6; margin-bottom: var(--space-2); }
+
+  /* live CV preview */
+  .cv-preview {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: var(--space-4);
+    background: #fff;
+    view-transition-name: cv-preview;
+  }
+  ::view-transition-old(cv-preview), ::view-transition-new(cv-preview) {
+    animation-duration: 220ms;
+  }
+  .cv-heading { text-align: center; font-size: 1.3rem; font-weight: bold; margin-bottom: var(--space-3); }
+  .cv-preview h3 { font-size: 0.95rem; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid var(--border); padding-bottom: 4px; margin-top: var(--space-4); }
+  .watermark { text-align: center; font-size: 10px; margin-top: var(--space-3); color: gray; }
+
+  .ats-note {
+    background: #eef6ff;
+    border: 1px solid #bcdcff;
+    border-radius: var(--radius-sm);
+    padding: 0.7rem 0.9rem;
+    font-size: 0.82rem;
+    color: #234;
+    margin: var(--space-3) 0;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .ats-note svg { flex-shrink: 0; width: 18px; height: 18px; margin-top: 1px; }
+
+  .preview-actions { display: flex; gap: var(--space-2); margin-top: var(--space-4); flex-wrap: wrap; }
+  .preview-actions button { flex: 1 1 auto; justify-content: center; }
+
+  .saved-indicator { font-size: 0.75rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+  .saved-indicator svg { width: 14px; height: 14px; color: #16a34a; }
+
+  /* row entry/exit animation */
+  .row-enter { animation: rowIn 180ms ease-out; }
+  @keyframes rowIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* toasts */
+  .toast-stack {
+    position: fixed;
+    bottom: var(--space-4);
+    right: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    z-index: 50;
+    max-width: 320px;
+  }
+  .toast {
+    background: #1f2430;
+    color: #fff;
+    border-radius: var(--radius-sm);
+    padding: 0.65rem 0.9rem;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    box-shadow: var(--shadow);
+  }
+  .toast button { background: transparent; border: none; color: #a5b4fc; padding: 0; }
+  .toast button:hover { color: #fff; border-color: transparent; }
+
+  /* Original 6 CV themes */
+  .theme-1 { font-family: Georgia, 'Times New Roman', serif; color: #333; }
+  .theme-2 { font-family: Verdana, sans-serif; color: #444; }
+  .theme-3 { font-family: 'Courier New', Courier, monospace; color: #222; }
+  .theme-4 { font-family: Tahoma, sans-serif; color: #111; }
+  .theme-5 { font-family: 'Lucida Console', Monaco, monospace; color: #555; }
+  .theme-6 { font-family: 'Palatino Linotype', Palatino, serif; color: #666; }
+
+  /* Decorative themes — fallback generic families added so unloaded fonts still degrade well.
+     These only affect the on-screen preview; the downloaded PDF is always plain/ATS-safe. */
+  .theme-7  { font-family: 'Cinzel', serif; color: #B22222; }
+  .theme-8  { font-family: Papyrus, fantasy; color: #DAA520; }
+  .theme-9  { font-family: 'Merriweather', serif; color: #8A2BE2; }
+  .theme-10 { font-family: 'Dancing Script', cursive; color: #FF69B4; }
+  .theme-11 { font-family: 'Playfair Display', serif; color: #FF8C00; }
+  .theme-12 { font-family: 'Roboto Slab', serif; color: #20B2AA; }
+  .theme-13 { font-family: 'Great Vibes', cursive; color: #6A5ACD; }
+  .theme-14 { font-family: 'Libre Baskerville', serif; color: #FF4500; }
+  .theme-15 { font-family: 'Cormorant', serif; color: #2E8B57; }
+  .theme-16 { font-family: 'Astloch', cursive; color: #1E90FF; }
+  .theme-17 { font-family: 'Galada', cursive; color: #DA70D6; }
+  .theme-18 { font-family: 'Yellowtail', cursive; color: #FFD700; }
+  .theme-19 { font-family: 'Sacramento', cursive; color: #556B2F; }
+  .theme-20 { font-family: 'Petit Formal Script', cursive; color: #8B4513; }
+  .theme-21 { font-family: 'Aleo', serif; color: #2F4F4F; }
+  .theme-22 { font-family: 'Special Elite', monospace; color: #808000; }
+  .theme-23 { font-family: 'Covered By Your Grace', cursive; color: #006400; }
+  .theme-24 { font-family: 'Charmonman', cursive; color: #228B22; }
+  .theme-25 { font-family: 'Caveat', cursive; color: #9ACD32; }
+  .theme-26 { font-family: 'Pacifico', cursive; color: #8FBC8F; }
+  .theme-27 { font-family: 'Satisfy', cursive; color: #FF1493; }
+  .theme-28 { font-family: 'Kaushan Script', cursive; color: #FF6347; }
+  .theme-29 { font-family: 'Indie Flower', cursive; color: #1E90FF; }
+  .theme-30 { font-family: 'Shadows Into Light', cursive; color: #00CED1; }
+  .theme-31 { font-family: 'Gloria Hallelujah', cursive; color: #9400D3; }
+  .theme-32 { font-family: 'Rock Salt', cursive; color: #FF7F50; }
+  .theme-33 { font-family: 'Josefin Sans', sans-serif; color: #DC143C; }
+  .theme-34 { font-family: 'Anton', sans-serif; color: #000000; }
+  .theme-35 { font-family: 'Bebas Neue', sans-serif; color: #FF0000; }
+  .theme-36 { font-family: 'Oswald', sans-serif; color: #800000; }
+  .theme-37 { font-family: 'Lora', serif; color: #00008B; }
+  .theme-38 { font-family: 'PT Serif', serif; color: #2F4F4F; }
+  .theme-39 { font-family: 'Play', sans-serif; color: #4B0082; }
+  .theme-40 { font-family: 'Amatic SC', cursive; color: #FF69B4; }
+  .theme-41 { font-family: 'Crimson Text', serif; color: #8B0000; }
+  .theme-42 { font-family: 'Vollkorn', serif; color: #C71585; }
+  .theme-43 { font-family: 'Bitter', serif; color: #483D8B; }
+  .theme-44 { font-family: 'Ubuntu', sans-serif; color: #2E8B57; }
+  .theme-45 { font-family: 'Josefin Slab', serif; color: #4682B4; }
+  .theme-46 { font-family: 'Spectral', serif; color: #A0522D; }
+</style>
+</head>
+<body x-data="cvApp()" x-cloak @input.debounce.800ms="autosave()">
+
+  <div class="app-shell">
+
+    <header class="app-header">
+      <h1>Re-V CV Maker Tool</h1>
+      <div class="progress-wrap">
+        <div class="progress-track"><div class="progress-fill" :style="`width: ${progress}%`"></div></div>
+        <div class="progress-label" x-text="progress === 100 ? 'All sections complete' : `${progress}% of sections filled in`"></div>
+      </div>
+      <div class="toolbar">
+        <button type="button" @click="loadSample()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M3 12h4M12 21v-4M21 12h-4M6.3 6.3l2.5 2.5M15.2 15.2l2.5 2.5M17.7 6.3l-2.5 2.5M8.8 15.2l-2.5 2.5"/></svg>
+          Try sample data
+        </button>
+        <button type="button" @click="saveData()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>
+          Save
+        </button>
+        <button type="button" @click="loadData(false)">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 8l5-5 5 5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
+          Load
+        </button>
+        <button type="button" class="danger-ghost" @click="clearAll()" title="Clear all fields">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+          Clear
+        </button>
+      </div>
+    </header>
+
+    <div class="app-grid">
+
+      <!-- ===================== FORM PANEL ===================== -->
+      <section class="panel">
+
+        <fieldset>
+          <legend>Personal details</legend>
+          <div class="field">
+            <label for="name">Full Name</label>
+            <input id="name" x-model="name" autocomplete="name" />
+          </div>
+          <div class="contact-grid">
+            <div class="field">
+              <label for="phone">Phone Number</label>
+              <input id="phone" x-model="phone" type="tel" autocomplete="tel" />
+            </div>
+            <div class="field">
+              <label for="email">Email Address</label>
+              <input id="email" x-model="email" type="email" autocomplete="email"
+                     :class="{ invalid: email && !isEmailValid }" @blur="touchedEmail = true" />
+              <p class="error-text" x-show="touchedEmail && email && !isEmailValid" x-cloak>That doesn't look like a valid email.</p>
+            </div>
+          </div>
+          <div class="field">
+            <label for="address">Home Address</label>
+            <input id="address" x-model="address" autocomplete="street-address" />
+          </div>
+          <div class="field">
+            <label for="about">About Me</label>
+            <input id="about" x-model="about" list="aboutList" />
+            <p class="hint">Start typing for suggestions, or write your own.</p>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            Preview theme
+          </legend>
+          <div class="theme-grid">
+            <template x-for="t in themes" :key="t.id">
+              <button type="button" class="theme-swatch" :class="{ active: theme === t.id }"
+                      @click="selectTheme(t.id)" :title="t.name">
+                <span class="swatch-glyph" :style="`font-family:${t.font}; color:${t.color}`">Aa</span>
+                <span x-text="t.name"></span>
+              </button>
+            </template>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Education</legend>
+          <div id="education-list" class="row-list">
+            <template x-for="(row, i) in education" :key="i">
+              <div class="row-card row-enter">
+                <span class="drag-handle" title="Drag to reorder">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                </span>
+                <div class="row-fields two-col">
+                  <input placeholder="Institution Name" x-model="row.institution" />
+                  <input placeholder="Qualification" x-model="row.qualification" />
+                  <input placeholder="Year Completed" x-model="row.year" />
+                </div>
+                <button type="button" class="danger-ghost" @click="removeEducation(i)" aria-label="Remove this education entry">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </div>
+            </template>
+          </div>
+          <button type="button" style="margin-top: var(--space-2)" @click="addEducation()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+            Add Education
+          </button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Experience</legend>
+          <div id="experience-list" class="row-list">
+            <template x-for="(row, i) in experience" :key="i">
+              <div class="row-card row-enter">
+                <span class="drag-handle" title="Drag to reorder">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                </span>
+                <div class="row-fields">
+                  <div class="row-fields two-col" style="margin:0">
+                    <input placeholder="Company Name" x-model="row.company" />
+                    <input placeholder="Position" x-model="row.position" />
+                  </div>
+                  <textarea placeholder="Duties (one per line)" x-model="row.duties" rows="2"></textarea>
+                  <input placeholder="Reference Contact" x-model="row.reference" />
+                </div>
+                <button type="button" class="danger-ghost" @click="removeExperience(i)" aria-label="Remove this experience entry">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </div>
+            </template>
+          </div>
+          <button type="button" style="margin-top: var(--space-2)" @click="addExperience()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+            Add Experience
+          </button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Skills</legend>
+          <div id="skills-list" class="row-list">
+            <template x-for="(skill, i) in skills" :key="i">
+              <div class="row-card row-enter">
+                <span class="drag-handle" title="Drag to reorder">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><circle cx="9" cy="5" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="19" r="1"/><circle cx="15" cy="5" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="19" r="1"/></svg>
+                </span>
+                <div class="row-fields">
+                  <input placeholder="Skill" x-model="skills[i]" />
+                </div>
+                <button type="button" class="danger-ghost" @click="removeSkill(i)" aria-label="Remove this skill">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
+              </div>
+            </template>
+          </div>
+          <button type="button" style="margin-top: var(--space-2)" @click="addSkill()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
+            Add Skill
+          </button>
+        </fieldset>
+
+        <p class="hint">About Developer: view <a href="README.md" target="_blank" rel="noopener">README.md</a></p>
+      </section>
+
+      <!-- ===================== PREVIEW PANEL ===================== -->
+      <aside class="panel preview-panel">
+        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom: var(--space-2)">
+          <strong>Live preview</strong>
+          <span class="saved-indicator" x-show="savedAt" x-cloak>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            <span x-text="savedAt ? `Saved ${savedAt.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}` : ''"></span>
+          </span>
+        </div>
+
+        <div class="ats-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          <span>This preview shows your chosen theme. The downloaded PDF always uses a clean, plain-text layout so applicant tracking systems (ATS) can read it correctly.</span>
+        </div>
+
+        <template x-if="!name">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="3" width="16" height="18" rx="2"/>
+              <path d="M8 8h8M8 12h8M8 16h5"/>
+              <circle cx="17" cy="17" r="4" fill="var(--bg)"/>
+              <path d="M15.5 17l1 1 2-2"/>
+            </svg>
+            <p>Fill in your details on the left — or click <strong>Try sample data</strong> above — to see your CV take shape here.</p>
+          </div>
+        </template>
+
+        <div class="cv-preview" :class="theme" x-show="name" x-cloak>
+          <div class="cv-heading">Curriculum Vitae</div>
+          <h2 x-text="titleCase(name)"></h2>
+          <p><strong>Phone:</strong> <span x-text="phone"></span></p>
+          <p><strong>Email:</strong> <span x-text="email"></span></p>
+          <p><strong>Address:</strong> <span x-text="titleCase(address)"></span></p>
+          <p><strong>About Me:</strong> <span x-text="titleCase(about)"></span></p>
+
+          <template x-if="education.length">
+            <div>
+              <h3>Education</h3>
+              <template x-for="row in education" :key="row">
+                <p>
+                  <span x-text="titleCase(row.institution)"></span> —
+                  <span x-text="titleCase(row.qualification)"></span>
+                  (<span x-text="row.year"></span>)
+                </p>
+              </template>
+            </div>
+          </template>
+
+          <template x-if="experience.length">
+            <div>
+              <h3>Experience</h3>
+              <template x-for="row in experience" :key="row">
+                <p>
+                  <strong x-text="titleCase(row.company)"></strong> — <span x-text="titleCase(row.position)"></span><br/>
+                  <span x-text="titleCase(row.duties)" style="white-space: pre-line"></span><br/>
+                  <em>Reference:</em> <span x-text="row.reference"></span>
+                </p>
+              </template>
+            </div>
+          </template>
+
+          <template x-if="skills.length">
+            <div>
+              <h3>Skills</h3>
+              <ul>
+                <template x-for="skill in skills" :key="skill">
+                  <li x-text="titleCase(skill)"></li>
+                </template>
+              </ul>
+            </div>
+          </template>
+
+          <div class="watermark">Created on www.re-el-branding.rf.gd</div>
+        </div>
+
+        <div class="preview-actions" x-show="name" x-cloak>
+          <button type="button" class="primary" @click="downloadCV()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="m17 8-5 5-5-5"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/></svg>
+            Download PDF (ATS-friendly)
+          </button>
+          <button type="button" @click="shareCV()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.6" x2="15.4" y1="10.6" y2="6.4"/><line x1="8.6" x2="15.4" y1="13.4" y2="17.6"/></svg>
+            Share
+          </button>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <datalist id="aboutList"></datalist>
+
+  <!-- toasts -->
+  <div class="toast-stack">
+    <template x-for="toast in toasts" :key="toast.id">
+      <div class="toast" x-transition:enter="row-enter" x-transition:leave.duration.200ms>
+        <span x-text="toast.message"></span>
+        <button type="button" x-show="toast.actionLabel" @click="toast.action(); toasts = toasts.filter(t => t.id !== toast.id)" x-text="toast.actionLabel"></button>
+      </div>
+    </template>
+  </div>
+
+  <script>
+    'use strict';
+
+    const STORAGE_KEY = 'rev_cv_data_v3';
+
+    const THEMES = [
+      { id: 'theme-1',  name: 'Classic Elegance',        font: "Georgia, serif",              color: '#333' },
+      { id: 'theme-2',  name: 'Professional Modern',      font: "Verdana, sans-serif",         color: '#444' },
+      { id: 'theme-3',  name: 'Clean Courier',            font: "'Courier New', monospace",    color: '#222' },
+      { id: 'theme-4',  name: 'Trusted Simplicity',       font: "Tahoma, sans-serif",           color: '#111' },
+      { id: 'theme-5',  name: 'Sharp Console',            font: "'Lucida Console', monospace", color: '#555' },
+      { id: 'theme-6',  name: 'Sophisticated Serif',      font: "'Palatino Linotype', serif",   color: '#666' },
+      { id: 'theme-7',  name: 'Astrological Aries',       font: "'Cinzel', serif",              color: '#B22222' },
+      { id: 'theme-8',  name: 'Astrological Taurus',      font: "Papyrus, fantasy",             color: '#DAA520' },
+      { id: 'theme-9',  name: 'Astrological Gemini',      font: "'Merriweather', serif",        color: '#8A2BE2' },
+      { id: 'theme-10', name: 'Astrological Cancer',      font: "'Dancing Script', cursive",    color: '#FF69B4' },
+      { id: 'theme-11', name: 'Astrological Leo',         font: "'Playfair Display', serif",    color: '#FF8C00' },
+      { id: 'theme-12', name: 'Astrological Virgo',       font: "'Roboto Slab', serif",         color: '#20B2AA' },
+      { id: 'theme-13', name: 'Astrological Libra',       font: "'Great Vibes', cursive",       color: '#6A5ACD' },
+      { id: 'theme-14', name: 'Astrological Scorpio',     font: "'Libre Baskerville', serif",   color: '#FF4500' },
+      { id: 'theme-15', name: 'Astrological Sagittarius', font: "'Cormorant', serif",           color: '#2E8B57' },
+      { id: 'theme-16', name: 'Astrological Capricorn',   font: "'Astloch', cursive",           color: '#1E90FF' },
+      { id: 'theme-17', name: 'Astrological Aquarius',    font: "'Galada', cursive",            color: '#DA70D6' },
+      { id: 'theme-18', name: 'Astrological Pisces',      font: "'Yellowtail', cursive",        color: '#FFD700' },
+      { id: 'theme-19', name: 'Herbal Mint',               font: "'Sacramento', cursive",        color: '#556B2F' },
+      { id: 'theme-20', name: 'Herbal Sage',                font: "'Petit Formal Script', cursive", color: '#8B4513' },
+      { id: 'theme-21', name: 'Herbal Rosemary',            font: "'Aleo', serif",                color: '#2F4F4F' },
+      { id: 'theme-22', name: 'Herbal Thyme',               font: "'Special Elite', monospace",   color: '#808000' },
+      { id: 'theme-23', name: 'Herbal Basil',               font: "'Covered By Your Grace', cursive", color: '#006400' },
+      { id: 'theme-24', name: 'Herbal Lavender',            font: "'Charmonman', cursive",        color: '#228B22' },
+      { id: 'theme-25', name: 'Herbal Chamomile',           font: "'Caveat', cursive",            color: '#9ACD32' },
+      { id: 'theme-26', name: 'Colourful Sunset',           font: "'Pacifico', cursive",          color: '#8FBC8F' },
+      { id: 'theme-27', name: 'Colourful Blossom',          font: "'Satisfy', cursive",           color: '#FF1493' },
+      { id: 'theme-28', name: 'Colourful Coral',            font: "'Kaushan Script', cursive",    color: '#FF6347' },
+      { id: 'theme-29', name: 'Colourful Ocean',            font: "'Indie Flower', cursive",      color: '#1E90FF' },
+      { id: 'theme-30', name: 'Colourful Teal',             font: "'Shadows Into Light', cursive", color: '#00CED1' },
+      { id: 'theme-31', name: 'Colourful Violet',           font: "'Gloria Hallelujah', cursive", color: '#9400D3' },
+      { id: 'theme-32', name: 'Colourful Peach',            font: "'Rock Salt', cursive",         color: '#FF7F50' },
+      { id: 'theme-33', name: 'Bold Crimson',               font: "'Josefin Sans', sans-serif",   color: '#DC143C' },
+      { id: 'theme-34', name: 'Bold Monochrome',            font: "'Anton', sans-serif",          color: '#000000' },
+      { id: 'theme-35', name: 'Bold Scarlet',               font: "'Bebas Neue', sans-serif",     color: '#FF0000' },
+      { id: 'theme-36', name: 'Bold Maroon',                font: "'Oswald', sans-serif",         color: '#800000' },
+      { id: 'theme-37', name: 'Masculine Navy',             font: "'Lora', serif",                color: '#00008B' },
+      { id: 'theme-38', name: 'Masculine Slate',            font: "'PT Serif', serif",            color: '#2F4F4F' },
+      { id: 'theme-39', name: 'Feminine Indigo',            font: "'Play', sans-serif",           color: '#4B0082' },
+      { id: 'theme-40', name: 'Feminine Pink',              font: "'Amatic SC', cursive",         color: '#FF69B4' },
+      { id: 'theme-41', name: 'Feminine Rose',              font: "'Crimson Text', serif",        color: '#8B0000' },
+      { id: 'theme-42', name: 'Feminine Magenta',           font: "'Vollkorn', serif",            color: '#C71585' },
+      { id: 'theme-43', name: 'Balanced Grey',              font: "'Bitter', serif",              color: '#483D8B' },
+      { id: 'theme-44', name: 'Balanced Emerald',           font: "'Ubuntu', sans-serif",         color: '#2E8B57' },
+      { id: 'theme-45', name: 'Balanced Steel',             font: "'Josefin Slab', serif",        color: '#4682B4' },
+      { id: 'theme-46', name: 'Balanced Chestnut',          font: "'Spectral', serif",            color: '#A0522D' }
+    ];
+
+    const ABOUT_ME_LIST = [
+      "A Motivated Professional With A Passion For Excellence.",
+      "Driven By Purpose, Grounded In Precision.",
+      "Creative Thinker With An Eye For Detail.",
+      "Results-Oriented With A Team-First Mentality.",
+      "Always Ready To Learn And Adapt.",
+      "Organized, Efficient, And Dependable.",
+      "Eager To Deliver Solutions That Matter.",
+      "Strategically Minded With Practical Know-How.",
+      "Dedicated To Quality And Innovation.",
+      "Honest, Reliable, And Goal-Focused.",
+      "Focused On Continuous Improvement.",
+      "Effective Communicator And Listener.",
+      "Analytical And Curious By Nature.",
+      "Thrives In Dynamic Work Environments.",
+      "Skilled At Managing Multiple Priorities.",
+      "An Enthusiastic Innovator Who Brings Creative Solutions To Complex Challenges With A Smile.",
+      "A Seasoned Professional Skilled In Adapting To Rapidly Changing Environments While Maintaining Quality And Standards.",
+      "A Results-Driven Specialist With A Demonstrated Track Record Of Achieving And Surpassing Targets.",
+      "A Tech-Savvy Enthusiast Who Integrates Emerging Tools To Optimize Workflows And Productivity.",
+      "A Project Management Professional With PMP Certification And Proven Delivery Records."
+    ];
+
+    const SAMPLE_DATA = {
+      theme: 'theme-2',
+      name: 'Thandiwe Nkosi',
+      phone: '082 555 0134',
+      email: 'thandiwe.nkosi@example.com',
+      address: '14 Baobab Street, Gqeberha, 6001',
+      about: 'A results-driven software developer who enjoys turning ambiguous problems into clean, working products.',
+      education: [
+        { institution: 'Nelson Mandela University', qualification: 'BSc Computer Science', year: '2022' },
+        { institution: 'WeThinkCode', qualification: 'Software Engineering Certificate', year: '2023' }
+      ],
+      experience: [
+        {
+          company: 'Bright Path Digital',
+          position: 'Junior Software Developer',
+          duties: 'Built and maintained internal tooling in React and Node.js\nParticipated in code reviews and sprint planning\nReduced page load time by 30% through lazy loading',
+          reference: 'Available on request'
+        }
+      ],
+      skills: ['JavaScript', 'React', 'Node.js', 'SQL', 'Git', 'Problem Solving']
+    };
+
+    function blankData() {
+      return {
+        theme: 'theme-1',
+        name: '', phone: '', email: '', address: '', about: '',
+        education: [], experience: [], skills: []
+      };
+    }
+
+    function capitalizeWords(str) {
+      return String(str ?? '').replace(/\b\w/g, c => c.toUpperCase());
+    }
+
+    // ---------- ATS-friendly PDF (real selectable text, single column, standard font) ----------
+
+    function generateAtsPdf(data) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+
+      const marginX = 48;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const maxWidth = pageWidth - marginX * 2;
+      let y = 56;
+
+      function ensureSpace(lineHeight) {
+        if (y + lineHeight > pageHeight - 48) {
+          doc.addPage();
+          y = 56;
+        }
+      }
+
+      function writeLine(text, { size = 11, style = 'normal', gapAfter = 14 } = {}) {
+        doc.setFont('helvetica', style);
+        doc.setFontSize(size);
+        const lines = doc.splitTextToSize(text, maxWidth);
+        lines.forEach(line => {
+          ensureSpace(size + 4);
+          doc.text(line, marginX, y);
+          y += size + 4;
+        });
+        y += gapAfter - (size + 4);
+        if (y < 0) y = 0;
+      }
+
+      function sectionHeading(text) {
+        y += 6;
+        ensureSpace(20);
+        doc.setDrawColor(180);
+        doc.setLineWidth(0.5);
+        doc.line(marginX, y, pageWidth - marginX, y);
+        y += 14;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.text(text.toUpperCase(), marginX, y);
+        y += 14;
+      }
+
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(20);
+      doc.text(capitalizeWords(data.name) || 'Full Name', marginX, y);
+      y += 24;
+
+      const contactParts = [data.phone, data.email, data.address].filter(Boolean);
+      if (contactParts.length) {
+        writeLine(contactParts.join('  |  '), { size: 10, gapAfter: 18 });
+      }
+
+      if (data.about) {
+        sectionHeading('Professional Summary');
+        writeLine(capitalizeWords(data.about), { size: 10.5, gapAfter: 8 });
+      }
+
+      if (data.experience.length) {
+        sectionHeading('Experience');
+        data.experience.forEach(row => {
+          writeLine(`${capitalizeWords(row.company)} — ${capitalizeWords(row.position)}`, { size: 11, style: 'bold', gapAfter: 4 });
+          if (row.duties) {
+            row.duties.split('\n').filter(Boolean).forEach(line => {
+              writeLine(`- ${capitalizeWords(line.trim())}`, { size: 10.5, gapAfter: 2 });
+            });
+          }
+          if (row.reference) {
+            writeLine(`Reference: ${row.reference}`, { size: 9.5, gapAfter: 12 });
+          } else {
+            y += 8;
+          }
+        });
+      }
+
+      if (data.education.length) {
+        sectionHeading('Education');
+        data.education.forEach(row => {
+          writeLine(`${capitalizeWords(row.institution)} — ${capitalizeWords(row.qualification)} (${row.year})`, { size: 10.5, gapAfter: 8 });
+        });
+      }
+
+      if (data.skills.length) {
+        sectionHeading('Skills');
+        writeLine(data.skills.map(capitalizeWords).join(', '), { size: 10.5, gapAfter: 8 });
+      }
+
+      ensureSpace(20);
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(8);
+      doc.setTextColor(140);
+      doc.text('Created on www.re-el-branding.rf.gd', marginX, pageHeight - 30);
+
+      return doc;
+    }
+
+    // ---------- Alpine component ----------
+
+    document.addEventListener('alpine:init', () => {
+      Alpine.data('cvApp', () => ({
+        ...blankData(),
+        themes: THEMES,
+        toasts: [],
+        toastId: 0,
+        lastRemoved: null,
+        autosaveTimer: null,
+        savedAt: null,
+        touchedEmail: false,
+
+        init() {
+          const aboutDatalist = document.getElementById('aboutList');
+          ABOUT_ME_LIST.forEach(text => {
+            const option = document.createElement('option');
+            option.value = text;
+            aboutDatalist.appendChild(option);
+          });
+          this.loadData(true);
+          this.$nextTick(() => this.initSortable());
+        },
+
+        get isEmailValid() {
+          return !this.email || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email);
+        },
+
+        get progress() {
+          const checks = [
+            !!(this.name && this.phone && this.email),
+            !!this.about,
+            this.education.length > 0,
+            this.experience.length > 0,
+            this.skills.length > 0
+          ];
+          return Math.round((checks.filter(Boolean).length / checks.length) * 100);
+        },
+
+        titleCase(str) { return capitalizeWords(str); },
+
+        exportData() {
+          return {
+            theme: this.theme, name: this.name, phone: this.phone, email: this.email,
+            address: this.address, about: this.about,
+            education: this.education, experience: this.experience, skills: this.skills
+          };
+        },
+
+        addEducation() { this.education.push({ institution: '', qualification: '', year: '' }); this.autosave(); },
+        addExperience() { this.experience.push({ company: '', position: '', duties: '', reference: '' }); this.autosave(); },
+        addSkill() { this.skills.push(''); this.autosave(); },
+
+        removeEducation(i) { this.removeWithUndo('education', i); },
+        removeExperience(i) { this.removeWithUndo('experience', i); },
+        removeSkill(i) { this.removeWithUndo('skills', i); },
+
+        removeWithUndo(type, index) {
+          const item = this[type][index];
+          this[type].splice(index, 1);
+          this.lastRemoved = { type, index, item };
+          this.showToast('Entry removed', { actionLabel: 'Undo', action: () => this.undoRemove() });
+          this.autosave();
+        },
+        undoRemove() {
+          if (!this.lastRemoved) return;
+          const { type, index, item } = this.lastRemoved;
+          this[type].splice(index, 0, item);
+          this.lastRemoved = null;
+          this.autosave();
+        },
+
+        selectTheme(id) {
+          const apply = () => { this.theme = id; this.autosave(); };
+          if (document.startViewTransition) {
+            document.startViewTransition(apply);
+          } else {
+            apply();
+          }
+        },
+
+        showToast(message, opts = {}) {
+          const id = ++this.toastId;
+          this.toasts.push({ id, message, actionLabel: opts.actionLabel || null, action: opts.action || (() => {}) });
+          setTimeout(() => { this.toasts = this.toasts.filter(t => t.id !== id); }, 5000);
+        },
+
+        autosave() {
+          clearTimeout(this.autosaveTimer);
+          this.autosaveTimer = setTimeout(() => {
+            this.persist();
+            this.savedAt = new Date();
+          }, 800);
+        },
+
+        persist() {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(this.exportData()));
+          } catch (err) {
+            console.error(err);
+          }
+        },
+
+        saveData() {
+          this.persist();
+          this.savedAt = new Date();
+          this.showToast('Saved locally');
+        },
+
+        loadData(silent) {
+          let raw;
+          try {
+            raw = localStorage.getItem(STORAGE_KEY);
+          } catch (err) {
+            console.error(err);
+            if (!silent) this.showToast('Could not access local storage');
+            return;
+          }
+          if (!raw) {
+            if (!silent) this.showToast('No saved data found');
+            return;
+          }
+          try {
+            Object.assign(this, JSON.parse(raw));
+            if (!silent) this.showToast('Loaded saved data');
+          } catch (err) {
+            console.error(err);
+            if (!silent) this.showToast('Saved data was corrupted');
+          }
+        },
+
+        loadSample() {
+          Object.assign(this, JSON.parse(JSON.stringify(SAMPLE_DATA)));
+          this.showToast('Sample data loaded');
+          this.autosave();
+        },
+
+        clearAll() {
+          if (!confirm('Clear all fields? This cannot be undone.')) return;
+          Object.assign(this, blankData());
+          this.persist();
+          this.showToast('Cleared');
+        },
+
+        initSortable() {
+          [['education-list', 'education'], ['experience-list', 'experience'], ['skills-list', 'skills']].forEach(([elId, prop]) => {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            Sortable.create(el, {
+              handle: '.drag-handle',
+              animation: 150,
+              ghostClass: 'sortable-ghost',
+              onEnd: (evt) => {
+                const { oldIndex, newIndex } = evt;
+                if (oldIndex === newIndex) return;
+                // Sortable already physically moved the DOM node; put it back so Alpine's
+                // own re-render (driven by the array splice below) is the only thing that moves it.
+                if (evt.item.parentNode) evt.item.parentNode.removeChild(evt.item);
+                evt.from.insertBefore(evt.item, evt.from.children[oldIndex] || null);
+
+                const arr = this[prop];
+                const moved = arr.splice(oldIndex, 1)[0];
+                arr.splice(newIndex, 0, moved);
+                this.autosave();
+              }
+            });
+          });
+        },
+
+        downloadCV() {
+          if (!this.name) return this.showToast('Please enter your name first.');
+          const doc = generateAtsPdf(this.exportData());
+          const safeName = (capitalizeWords(this.name) || 'CV').replace(/[^\w\- ]/g, '').trim().replace(/\s+/g, '_');
+          doc.save(`${safeName}_CV.pdf`);
+          this.showToast('PDF downloaded');
+        },
+
+        shareCV() {
+          this.showToast('Use your browser share feature, or send the downloaded PDF directly.');
+        }
+      }));
+    });
+  </script>
+</body>
+</html>ana, sans-serif;
     background: linear-gradient(135deg, #e0e0e0 30%, #ffffff);
     padding: 2rem;
   }
