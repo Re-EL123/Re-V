@@ -720,103 +720,596 @@
       return String(str ?? '').replace(/\b\w/g, c => c.toUpperCase());
     }
 
-    // ---------- ATS-friendly PDF (real selectable text, single column, standard font) ----------
+   // ---------- ATS-friendly professional PDF ----------
+// Real selectable text, single-column layout, clean typography,
+// controlled page breaks, readable bullets and consistent spacing.
 
-    function generateAtsPdf(data) {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+function generateAtsPdf(data) {
+  const { jsPDF } = window.jspdf;
 
-      const marginX = 48;
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const maxWidth = pageWidth - marginX * 2;
-      let y = 56;
+  const doc = new jsPDF({
+    unit: 'pt',
+    format: 'a4',
+    orientation: 'portrait',
+    compress: true
+  });
 
-      function ensureSpace(lineHeight) {
-        if (y + lineHeight > pageHeight - 48) {
-          doc.addPage();
-          y = 56;
-        }
-      }
+  // ------------------------------------------------------------
+  // PAGE / LAYOUT CONSTANTS
+  // ------------------------------------------------------------
 
-      function writeLine(text, { size = 11, style = 'normal', gapAfter = 14 } = {}) {
-        doc.setFont('helvetica', style);
-        doc.setFontSize(size);
-        const lines = doc.splitTextToSize(text, maxWidth);
-        lines.forEach(line => {
-          ensureSpace(size + 4);
-          doc.text(line, marginX, y);
-          y += size + 4;
-        });
-        y += gapAfter - (size + 4);
-        if (y < 0) y = 0;
-      }
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
 
-      function sectionHeading(text) {
-        y += 6;
-        ensureSpace(20);
-        doc.setDrawColor(180);
-        doc.setLineWidth(0.5);
-        doc.line(marginX, y, pageWidth - marginX, y);
-        y += 14;
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(12);
-        doc.text(text.toUpperCase(), marginX, y);
-        y += 14;
-      }
+  const MARGIN = {
+    left: 52,
+    right: 52,
+    top: 54,
+    bottom: 50
+  };
 
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(20);
-      doc.text(capitalizeWords(data.name) || 'Full Name', marginX, y);
-      y += 24;
+  const contentWidth = pageWidth - MARGIN.left - MARGIN.right;
+  const bottomLimit = pageHeight - MARGIN.bottom;
 
-      const contactParts = [data.phone, data.email, data.address].filter(Boolean);
-      if (contactParts.length) {
-        writeLine(contactParts.join('  |  '), { size: 10, gapAfter: 18 });
-      }
+  let y = MARGIN.top;
 
-      if (data.about) {
-        sectionHeading('Professional Summary');
-        writeLine(capitalizeWords(data.about), { size: 10.5, gapAfter: 8 });
-      }
+  // Professional neutral palette.
+  // Kept restrained so the PDF remains ATS-friendly.
+  const COLORS = {
+    text: [31, 36, 48],
+    muted: [92, 99, 112],
+    heading: [33, 57, 106],
+    rule: [210, 214, 221],
+    bullet: [55, 65, 81],
+    footer: [145, 150, 158]
+  };
 
-      if (data.experience.length) {
-        sectionHeading('Experience');
-        data.experience.forEach(row => {
-          writeLine(`${capitalizeWords(row.company)} — ${capitalizeWords(row.position)}`, { size: 11, style: 'bold', gapAfter: 4 });
-          if (row.duties) {
-            row.duties.split('\n').filter(Boolean).forEach(line => {
-              writeLine(`- ${capitalizeWords(line.trim())}`, { size: 10.5, gapAfter: 2 });
-            });
-          }
-          if (row.reference) {
-            writeLine(`Reference: ${row.reference}`, { size: 9.5, gapAfter: 12 });
-          } else {
-            y += 8;
-          }
-        });
-      }
+  // ------------------------------------------------------------
+  // BASIC HELPERS
+  // ------------------------------------------------------------
 
-      if (data.education.length) {
-        sectionHeading('Education');
-        data.education.forEach(row => {
-          writeLine(`${capitalizeWords(row.institution)} — ${capitalizeWords(row.qualification)} (${row.year})`, { size: 10.5, gapAfter: 8 });
-        });
-      }
+  function clean(value) {
+    return String(value ?? '')
+      .replace(/\r/g, '')
+      .replace(/[ \t]+/g, ' ')
+      .trim();
+  }
 
-      if (data.skills.length) {
-        sectionHeading('Skills');
-        writeLine(data.skills.map(capitalizeWords).join(', '), { size: 10.5, gapAfter: 8 });
-      }
+  function cleanLine(value) {
+    return clean(value).replace(/\s+/g, ' ');
+  }
 
-      ensureSpace(20);
-      doc.setFont('helvetica', 'italic');
-      doc.setFontSize(8);
-      doc.setTextColor(140);
-      doc.text('Created on www.re-el-branding.rf.gd', marginX, pageHeight - 30);
+  // IMPORTANT:
+  // Do NOT use capitalizeWords() inside the PDF.
+  // It breaks names and technical terms:
+  // JavaScript -> Javascript
+  // Node.js -> Node.Js
+  // GitHub -> Github
+  // PostgreSQL -> Postgresql
+  function displayText(value) {
+    return clean(value);
+  }
 
-      return doc;
+  function setTextColor(color) {
+    doc.setTextColor(color[0], color[1], color[2]);
+  }
+
+  function setDrawColor(color) {
+    doc.setDrawColor(color[0], color[1], color[2]);
+  }
+
+  function setFillColor(color) {
+    doc.setFillColor(color[0], color[1], color[2]);
+  }
+
+  function addPage() {
+    doc.addPage();
+    y = MARGIN.top;
+  }
+
+  function ensureSpace(requiredHeight) {
+    if (y + requiredHeight > bottomLimit) {
+      addPage();
+      return true;
     }
+
+    return false;
+  }
+
+  function setFont(size = 10, style = 'normal') {
+    doc.setFont('helvetica', style);
+    doc.setFontSize(size);
+    setTextColor(COLORS.text);
+  }
+
+  function wrapText(text, width) {
+    return doc.splitTextToSize(clean(text), width);
+  }
+
+  // ------------------------------------------------------------
+  // FOOTER
+  // ------------------------------------------------------------
+
+  function drawFooter(pageNumber, totalPages) {
+    const footerY = pageHeight - 25;
+
+    setDrawColor(COLORS.rule);
+    doc.setLineWidth(0.5);
+    doc.line(
+      MARGIN.left,
+      footerY - 10,
+      pageWidth - MARGIN.right,
+      footerY - 10
+    );
+
+    setFont(7.5, 'normal');
+    setTextColor(COLORS.footer);
+
+    doc.text(
+      'Created with Re-V CV Maker',
+      MARGIN.left,
+      footerY
+    );
+
+    const pageText = `Page ${pageNumber} of ${totalPages}`;
+
+    doc.text(
+      pageText,
+      pageWidth - MARGIN.right,
+      footerY,
+      { align: 'right' }
+    );
+  }
+
+  // ------------------------------------------------------------
+  // HEADER
+  // ------------------------------------------------------------
+
+  function drawNameHeader() {
+    const name = displayText(data.name) || 'Full Name';
+
+    // Name
+    setFont(24, 'bold');
+    setTextColor(COLORS.heading);
+
+    const nameLines = wrapText(name, contentWidth);
+
+    nameLines.forEach(line => {
+      doc.text(line, MARGIN.left, y);
+      y += 27;
+    });
+
+    // Small professional rule
+    setDrawColor(COLORS.heading);
+    doc.setLineWidth(1.5);
+
+    doc.line(
+      MARGIN.left,
+      y + 2,
+      MARGIN.left + Math.min(contentWidth, 125),
+      y + 2
+    );
+
+    y += 18;
+
+    // Contact information
+    const contacts = [
+      data.phone,
+      data.email,
+      data.address
+    ]
+      .map(cleanLine)
+      .filter(Boolean);
+
+    if (contacts.length) {
+      setFont(9.5, 'normal');
+      setTextColor(COLORS.muted);
+
+      // Keep contact details selectable and ATS-readable.
+      const contactText = contacts.join('  |  ');
+      const contactLines = wrapText(contactText, contentWidth);
+
+      contactLines.forEach(line => {
+        ensureSpace(15);
+
+        doc.text(
+          line,
+          MARGIN.left,
+          y
+        );
+
+        y += 13;
+      });
+
+      y += 8;
+    }
+  }
+
+  // ------------------------------------------------------------
+  // SECTION HEADING
+  // ------------------------------------------------------------
+
+  function sectionHeading(title) {
+    const headingHeight = 30;
+
+    // Prevent heading from being stranded at bottom of page.
+    if (y + headingHeight > bottomLimit) {
+      addPage();
+    }
+
+    y += 8;
+
+    setDrawColor(COLORS.rule);
+    doc.setLineWidth(0.7);
+
+    doc.line(
+      MARGIN.left,
+      y,
+      pageWidth - MARGIN.right,
+      y
+    );
+
+    y += 15;
+
+    setFont(11.5, 'bold');
+    setTextColor(COLORS.heading);
+
+    doc.text(
+      clean(title).toUpperCase(),
+      MARGIN.left,
+      y
+    );
+
+    y += 15;
+  }
+
+  // ------------------------------------------------------------
+  // BODY PARAGRAPH
+  // ------------------------------------------------------------
+
+  function paragraph(text, options = {}) {
+    const {
+      size = 10,
+      lineHeight = 14,
+      gapAfter = 8,
+      color = COLORS.text
+    } = options;
+
+    const value = clean(text);
+
+    if (!value) return;
+
+    setFont(size, 'normal');
+    setTextColor(color);
+
+    const lines = wrapText(value, contentWidth);
+
+    const blockHeight = lines.length * lineHeight;
+
+    ensureSpace(blockHeight);
+
+    lines.forEach(line => {
+      doc.text(line, MARGIN.left, y);
+      y += lineHeight;
+    });
+
+    y += gapAfter;
+  }
+
+  // ------------------------------------------------------------
+  // BULLET LIST
+  // ------------------------------------------------------------
+
+  function bulletList(items) {
+    const bulletIndent = 13;
+    const textX = MARGIN.left + bulletIndent;
+    const textWidth = contentWidth - bulletIndent;
+
+    items
+      .map(cleanLine)
+      .filter(Boolean)
+      .forEach(item => {
+
+        setFont(9.8, 'normal');
+        setTextColor(COLORS.text);
+
+        const lines = wrapText(item, textWidth);
+
+        // Keep a bullet and at least the first line together.
+        const requiredHeight = Math.max(
+          14,
+          lines.length * 13.5
+        );
+
+        ensureSpace(requiredHeight);
+
+        // Bullet
+        setFillColor(COLORS.bullet);
+
+        doc.circle(
+          MARGIN.left + 3.5,
+          y - 3.2,
+          1.7,
+          'F'
+        );
+
+        // Text
+        setTextColor(COLORS.text);
+
+        lines.forEach((line, index) => {
+          doc.text(
+            line,
+            textX,
+            y
+          );
+
+          y += 13.5;
+        });
+
+        y += 2;
+      });
+
+    y += 5;
+  }
+
+  // ------------------------------------------------------------
+  // EXPERIENCE BLOCK
+  // ------------------------------------------------------------
+
+  function experienceBlock(row) {
+    const company = displayText(row.company);
+    const position = displayText(row.position);
+    const reference = displayText(row.reference);
+
+    const duties = String(row.duties || '')
+      .split('\n')
+      .map(line => line.trim())
+      .filter(Boolean);
+
+    if (!company && !position && !duties.length && !reference) {
+      return;
+    }
+
+    // Estimate enough space for the heading before starting.
+    const estimatedHeadingHeight = 32;
+
+    if (y + estimatedHeadingHeight > bottomLimit) {
+      addPage();
+    }
+
+    // Position
+    if (position) {
+      setFont(11, 'bold');
+      setTextColor(COLORS.text);
+
+      const positionLines = wrapText(position, contentWidth);
+
+      positionLines.forEach(line => {
+        doc.text(line, MARGIN.left, y);
+        y += 14;
+      });
+    }
+
+    // Company
+    if (company) {
+      setFont(10, 'bold');
+      setTextColor(COLORS.heading);
+
+      const companyLines = wrapText(company, contentWidth);
+
+      companyLines.forEach(line => {
+        doc.text(line, MARGIN.left, y);
+        y += 13;
+      });
+    }
+
+    y += 5;
+
+    // Duties
+    if (duties.length) {
+      bulletList(duties);
+    }
+
+    // Reference
+    if (reference) {
+      ensureSpace(18);
+
+      setFont(8.8, 'normal');
+      setTextColor(COLORS.muted);
+
+      doc.text(
+        `Reference: ${reference}`,
+        MARGIN.left,
+        y
+      );
+
+      y += 13;
+    }
+
+    y += 8;
+
+    // Small separator between jobs.
+    setDrawColor(COLORS.rule);
+    doc.setLineWidth(0.35);
+
+    doc.line(
+      MARGIN.left,
+      y,
+      pageWidth - MARGIN.right,
+      y
+    );
+
+    y += 12;
+  }
+
+  // ------------------------------------------------------------
+  // EDUCATION BLOCK
+  // ------------------------------------------------------------
+
+  function educationBlock(row) {
+    const institution = displayText(row.institution);
+    const qualification = displayText(row.qualification);
+    const year = cleanLine(row.year);
+
+    if (!institution && !qualification && !year) {
+      return;
+    }
+
+    const title = [qualification, institution]
+      .filter(Boolean)
+      .join(' — ');
+
+    const lines = wrapText(
+      title || institution || qualification,
+      contentWidth
+    );
+
+    const requiredHeight = lines.length * 14 + 18;
+
+    ensureSpace(requiredHeight);
+
+    setFont(10.2, 'bold');
+    setTextColor(COLORS.text);
+
+    lines.forEach(line => {
+      doc.text(
+        line,
+        MARGIN.left,
+        y
+      );
+
+      y += 14;
+    });
+
+    if (year) {
+      setFont(9.2, 'normal');
+      setTextColor(COLORS.muted);
+
+      doc.text(
+        year,
+        MARGIN.left,
+        y
+      );
+
+      y += 13;
+    }
+
+    y += 7;
+  }
+
+  // ------------------------------------------------------------
+  // SKILLS
+  // ------------------------------------------------------------
+
+  function skillsBlock(skills) {
+    const values = skills
+      .map(displayText)
+      .filter(Boolean);
+
+    if (!values.length) return;
+
+    setFont(9.8, 'normal');
+    setTextColor(COLORS.text);
+
+    // Use a comma-separated list rather than visual tags/pills.
+    // This remains highly ATS-readable.
+    const skillText = values.join('  •  ');
+
+    const lines = wrapText(
+      skillText,
+      contentWidth
+    );
+
+    const lineHeight = 14;
+
+    ensureSpace(lines.length * lineHeight);
+
+    lines.forEach(line => {
+      doc.text(
+        line,
+        MARGIN.left,
+        y
+      );
+
+      y += lineHeight;
+    });
+
+    y += 7;
+  }
+
+  // ------------------------------------------------------------
+  // DOCUMENT CONTENT
+  // ------------------------------------------------------------
+
+  drawNameHeader();
+
+  // PROFESSIONAL SUMMARY
+  if (clean(data.about)) {
+    sectionHeading('Professional Summary');
+
+    paragraph(data.about, {
+      size: 10,
+      lineHeight: 14.5,
+      gapAfter: 7
+    });
+  }
+
+  // EXPERIENCE
+  const validExperience = (data.experience || []).filter(row =>
+    clean(row.company) ||
+    clean(row.position) ||
+    clean(row.duties) ||
+    clean(row.reference)
+  );
+
+  if (validExperience.length) {
+    sectionHeading('Professional Experience');
+
+    validExperience.forEach(row => {
+      experienceBlock(row);
+    });
+  }
+
+  // EDUCATION
+  const validEducation = (data.education || []).filter(row =>
+    clean(row.institution) ||
+    clean(row.qualification) ||
+    clean(row.year)
+  );
+
+  if (validEducation.length) {
+    sectionHeading('Education');
+
+    validEducation.forEach(row => {
+      educationBlock(row);
+    });
+  }
+
+  // SKILLS
+  const validSkills = (data.skills || []).filter(Boolean);
+
+  if (validSkills.length) {
+    sectionHeading('Skills');
+
+    skillsBlock(validSkills);
+  }
+
+  // ------------------------------------------------------------
+  // FINALISE FOOTERS
+  // ------------------------------------------------------------
+
+  const totalPages = doc.internal.getNumberOfPages();
+
+  for (let page = 1; page <= totalPages; page++) {
+    doc.setPage(page);
+    drawFooter(page, totalPages);
+  }
+
+  // Reset colour in case this function is extended later.
+  setTextColor(COLORS.text);
+
+  return doc;
+}
 
     // ---------- Alpine component ----------
 
